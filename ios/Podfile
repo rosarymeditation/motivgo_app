@@ -1,0 +1,54 @@
+platform :ios, '15.5'
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug'   => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  xcconfig = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  raise "#{xcconfig} must exist. Run flutter pub get first." unless File.exist?(xcconfig)
+
+  File.foreach(xcconfig) do |line|
+    if line =~ /FLUTTER_ROOT=(.*)/
+      return $1.strip
+    end
+  end
+  raise "FLUTTER_ROOT not found in #{xcconfig}. Try deleting it and running flutter pub get."
+end
+
+require File.expand_path(
+  File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper')
+)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!  # needed for Swift pods
+
+  # Explicitly include PhoneNumberKit v3.x for libphonenumber_plugin compatibility
+  pod 'PhoneNumberKit', '~> 3.7.8'
+
+
+  pod 'OneSignalXCFramework', '>= 5.0.0', '< 6.0'
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
+
+# Notification Service Extension
+target 'OneSignalNotificationServiceExtension' do
+  use_frameworks!
+  pod 'OneSignalXCFramework', '>= 5.0.0', '< 6.0'
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    # Force Swift 5 for all pods
+    target.build_configurations.each do |config|
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+    end
+    flutter_additional_ios_build_settings(target)
+  end
+end

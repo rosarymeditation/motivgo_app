@@ -1,0 +1,39 @@
+import 'package:get/route_manager.dart';
+import 'package:rosary/auth/register.dart';
+import 'package:rosary/screens/dashboard.dart';
+import 'package:rosary/screens/first_goal.dart';
+import 'package:rosary/screens/focus_area.dart';
+
+import 'package:rosary/screens/landing.dart';
+import 'package:rosary/splash/splash_page.dart';
+
+import '../auth/login.dart';
+
+class RouteHelpers {
+  static const String landingPage = "/landing-page";
+
+  static const String registerPage = "/register-page";
+  static const String loginPage = "/login-page";
+   static const String dashboard = "/dashboard-page";
+  static const String firstGoalPage = "/first-goal-page";
+  static const String focusAreaPage = "/focus-area-page";
+  static const String initial = "/";
+  static List<GetPage> routes = [
+    GetPage(name: initial, page: () => const SplashScreen()),
+    // GetPage(name: reflectionPage, page: () => const ReflectionScreen()),
+    // GetPage(name: notificationPage, page: () => const NotificationScreen()),
+
+    //GetPage(name: mysterySelectionPage, page: () => MysterySelectionPage()),
+
+    //GetPage(name: dailyReadingPage, page: () => const DailyReadingScreen()),
+    //GetPage(name: wayOfCross, page: () => StationPage()),
+    // GetPage(name: emailPage, page: () => ReportScreen()),
+    GetPage(name: firstGoalPage, page: () => FirstGoalPage()),
+    GetPage(name: dashboard, page: () => DashboardPage()),
+    GetPage(name: focusAreaPage, page: () => FocusAreasPage()),
+    GetPage(name: landingPage, page: () => LandingPage()),
+    GetPage(name: loginPage, page: () => LoginPage()),
+
+    GetPage(name: registerPage, page: () => RegisterPage()),
+  ];
+}
