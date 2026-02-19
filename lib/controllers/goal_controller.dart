@@ -58,13 +58,13 @@ class GoalController extends GetxController {
           await storage.saveUser(UserModel.fromJson({"user": userJson}));
         }
         if (goalJson != null) {
-          await AlarmService().scheduleAlarm(
-            id: goal.hashCode, // unique id per goal
-            title: "Goal Reminder",
-            body: goalTitle.trim(),
-            scheduledDate: scheduledAt,
-            //remoteAudioUrl: "https://yourserver.com/audio.mp3", // optional
-          );
+          // await AlarmService().scheduleAlarm(
+          //   id: goal.hashCode, // unique id per goal
+          //   title: "Goal Reminder",
+          //   body: goalTitle.trim(),
+          //   scheduledDate: scheduledAt,
+          //   //remoteAudioUrl: "https://yourserver.com/audio.mp3", // optional
+          // );
           await storage.saveGoal(GoalModel.fromJson(goalJson));
         }
 
