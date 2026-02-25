@@ -10,10 +10,10 @@ import '../model/language_model.dart';
 class AppConstant {
   // https://rosary-api.onrender.com/api/
 
-  static const String BASE_URL = "https://motivgo-api.onrender.com/api/";
+  //static const String BASE_URL = "https://motivgo-api.onrender.com/api/";
   // static const String BASE_URL =
   // "https://catholic-dating-server.onrender.com/api/";
-  //static const String BASE_URL = "http://localhost:8001/api/";
+  static const String BASE_URL = "http://localhost:8001/api/";
 
   //
   //occupationList

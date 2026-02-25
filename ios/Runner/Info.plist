@@ -46,6 +46,8 @@
 		<string>googlechromes</string>
 		<string>com.googleusercontent.apps.224780754506-79lj5940eija5658g15435gl3afa5v3j</string>
 	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+    <string>This app needs local network access to enable Flutter debugging.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to your camera to allow you to take and upload profile pictures for your account.</string>
 	<key>NSFaceIDUsageDescription</key>

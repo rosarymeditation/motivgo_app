@@ -1,91 +1,91 @@
 import 'package:hive/hive.dart';
-
 part 'goal_occurrence_model.g.dart';
 
-@HiveType(typeId: 2)
-class GoalOccurrenceModel extends HiveObject {
+@HiveType(typeId: 5)
+enum GoalOccurrenceStatus {
   @HiveField(0)
-  String id;
+  pending,
+  @HiveField(1)
+  completed,
+  @HiveField(2)
+  skipped,
+}
+
+@HiveType(typeId: 2)
+class GoalOccurrence extends HiveObject {
+  @HiveField(0)
+  late String goalId;
 
   @HiveField(1)
-  String userId;
+  late String dateKey; // "YYYY-MM-DD"
 
   @HiveField(2)
-  String goalId;
+  late DateTime scheduledAt;
 
   @HiveField(3)
-  String dateKey;
+  late GoalOccurrenceStatus status;
 
   @HiveField(4)
-  DateTime scheduledAt;
-
-  @HiveField(5)
-  String status;
-
-  @HiveField(6)
   DateTime? checkedInAt;
 
+  @HiveField(5)
+  String? pillar;
+
+  @HiveField(6)
+  String? motivationStyle;
+
   @HiveField(7)
-  String pillar;
+  String? format;
 
   @HiveField(8)
-  String motivationStyle;
-
-  @HiveField(9)
-  String format;
-
-  @HiveField(10)
-  bool faithToggle;
-
-  @HiveField(11)
   String? messageText;
 
-  @HiveField(12)
+  @HiveField(9)
   String? audioUrl;
 
-  @HiveField(13)
-  DateTime createdAt;
+  @HiveField(10)
+  late DateTime createdAt;
 
-  @HiveField(14)
-  DateTime updatedAt;
+  @HiveField(11)
+  late DateTime updatedAt;
 
-  GoalOccurrenceModel({
-    required this.id,
-    required this.userId,
+   @HiveField(12)
+  String? goalTitle; // ✅ ADD THIS
+
+
+  GoalOccurrence({
     required this.goalId,
     required this.dateKey,
     required this.scheduledAt,
-    required this.status,
+    this.status = GoalOccurrenceStatus.pending,
     this.checkedInAt,
-    required this.pillar,
-    required this.motivationStyle,
-    required this.format,
-    required this.faithToggle,
+    this.pillar,
+    this.motivationStyle,
+    this.format,
     this.messageText,
     this.audioUrl,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+     required this.goalTitle, 
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  })  : createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now();
 
-  factory GoalOccurrenceModel.fromJson(Map<String, dynamic> json) {
-    return GoalOccurrenceModel(
-      id: json["_id"],
-      userId: json["userId"],
-      goalId: json["goalId"],
-      dateKey: json["dateKey"],
-      scheduledAt: DateTime.parse(json["scheduledAt"]),
-      status: json["status"],
-      checkedInAt: json["checkedInAt"] != null
-          ? DateTime.parse(json["checkedInAt"])
-          : null,
-      pillar: json["pillar"],
-      motivationStyle: json["motivationStyle"],
-      format: json["format"],
-      faithToggle: json["faithToggle"] ?? false,
-      messageText: json["messageText"],
-      audioUrl: json["audioUrl"],
-      createdAt: DateTime.parse(json["createdAt"]),
-      updatedAt: DateTime.parse(json["updatedAt"]),
-    );
+
+        Map<String, dynamic> toJson() {
+    return {
+      'goalId': goalId,
+      'dateKey': dateKey,
+      'goalTitle': goalTitle,
+      'scheduledAt': scheduledAt.toIso8601String(),
+      'status': status.name, // enum as String
+      'checkedInAt': checkedInAt?.toIso8601String(),
+      'pillar': pillar,
+      'motivationStyle': motivationStyle,
+      'format': format,
+      'messageText': messageText,
+      'audioUrl': audioUrl,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
   }
 }

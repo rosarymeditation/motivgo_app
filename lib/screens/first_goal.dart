@@ -6,6 +6,7 @@ import 'package:rosary/utils/notification_service.dart';
 
 import '../controllers/goal_controller.dart';
 import '../controllers/pillar_controller.dart';
+import '../enums/motivational_style_type.dart';
 import '../enums/time_enum.dart';
 import '../widgets/motiv_label.dart';
 import '../widgets/primary_button.dart';
@@ -33,8 +34,9 @@ class _FirstGoalPageState extends State<FirstGoalPage> {
   RepeatOption repeatOption = RepeatOption.none;
   final Set<int> selectedWeekdays = {}; // 1 = Monday ... 7 = Sunday
   int? monthlyDay;
+MotivationStyle motivationStyle = MotivationStyle.gentle;
 
-  String motivationStyle = "Firm & Encouraging";
+  //String motivationStyle = "Firm & Encouraging";
   String format = "Audio";
   bool both = true;
 
@@ -331,7 +333,7 @@ class _FirstGoalPageState extends State<FirstGoalPage> {
   // SAVE GOAL (UNBROKEN LOGIC)
   // ============================================================
 
-  void _saveGoal() async {
+void _saveGoal() async {
     final goalText = goalCtrl.text.trim();
 
     if (goalText.isEmpty) {
@@ -344,7 +346,18 @@ class _FirstGoalPageState extends State<FirstGoalPage> {
       return;
     }
 
-    DateTime scheduledAt;
+    // 🔥 Extra validation for repeat types
+    if (repeatOption == RepeatOption.weekly && selectedWeekdays.isEmpty) {
+      Get.snackbar("Missing Days", "Please select at least one weekday.");
+      return;
+    }
+
+    if (repeatOption == RepeatOption.monthly && monthlyDay == null) {
+      Get.snackbar("Missing Day", "Please select a day of month.");
+      return;
+    }
+
+    DateTime? scheduledAt;
 
     if (repeatOption == RepeatOption.none) {
       if (selectedDate == null) {
@@ -359,76 +372,26 @@ class _FirstGoalPageState extends State<FirstGoalPage> {
         selectedTime!.hour,
         selectedTime!.minute,
       );
-    } else {
-      final now = DateTime.now();
-      scheduledAt = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        selectedTime!.hour,
-        selectedTime!.minute,
-      );
     }
 
     final res = await _goalController.saveGoalAndUpdateUser(
       goalTitle: goalText,
       pillar: selectedPillar!.apiValue,
+      repeatType: repeatOption.name, // 🔥 IMPORTANT
+      hour: selectedTime!.hour,
+      minute: selectedTime!.minute,
+      weekdays: selectedWeekdays.toList(),
+      dayOfMonth: monthlyDay,
       scheduledAt: scheduledAt,
-      motivationStyle: "firm",
+      motivationStyle: motivationStyle.apiValue,
       format: format,
       faithToggle: both,
     );
 
     if (res.isSuccess) {
-     final alarmService = AlarmService();
-
-      if (repeatOption == RepeatOption.none) {
-        await alarmService.scheduleAlarm(
-          id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          title: goalText,
-          body: "Time to work on your goal",
-          hour: selectedTime!.hour,
-          minute: selectedTime!.minute,
-          repeatType: RepeatType.none,
-        );
-      }
-
-      if (repeatOption == RepeatOption.weekly) {
-        await alarmService.scheduleAlarm(
-          id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          title: goalText,
-          body: "Time to work on your goal",
-          hour: selectedTime!.hour,
-          minute: selectedTime!.minute,
-          repeatType: RepeatType.weekly,
-          weekdays: selectedWeekdays.toList(),
-        );
-      }
-
-      if (repeatOption == RepeatOption.monthly) {
-        await alarmService.scheduleAlarm(
-          id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          title: goalText,
-          body: "Time to work on your goal",
-          hour: selectedTime!.hour,
-          minute: selectedTime!.minute,
-          repeatType: RepeatType.monthly,
-          dayOfMonth: monthlyDay,
-        );
-      }
-
-      if (repeatOption == RepeatOption.yearly) {
-        await alarmService.scheduleAlarm(
-          id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          title: goalText,
-          body: "Time to work on your goal",
-          hour: selectedTime!.hour,
-          minute: selectedTime!.minute,
-          repeatType: RepeatType.yearly,
-        );
-      }
-
-      Get.offAllNamed(RouteHelpers.dashboard);
+      Get.offAllNamed(RouteHelpers.bottomNav);
+    } else {
+      Get.snackbar("Error", res.message);
     }
   }
 
@@ -476,18 +439,16 @@ class _FirstGoalPageState extends State<FirstGoalPage> {
     });
   }
 
-  Widget _buildMotivationDropdown() {
-    return _SelectDropdown<String>(
+ Widget _buildMotivationDropdown() {
+    return _SelectDropdown<MotivationStyle>(
       value: motivationStyle,
-      items: const [
-        "Gentle Encouragement",
-        "Firm & Encouraging",
-        "Affirmations",
-        "Short Reflection",
-        "Faith-based",
-      ],
-      labelBuilder: (s) => s,
-      onChanged: (s) => setState(() => motivationStyle = s),
+      items: MotivationStyle.values,
+      labelBuilder: (style) => style.label,
+      onChanged: (style) {
+        if (style != null) {
+          setState(() => motivationStyle = style);
+        }
+      },
     );
   }
 }

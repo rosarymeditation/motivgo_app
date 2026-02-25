@@ -6,69 +6,63 @@ part of 'goal_occurrence_model.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class GoalOccurrenceModelAdapter extends TypeAdapter<GoalOccurrenceModel> {
+class GoalOccurrenceAdapter extends TypeAdapter<GoalOccurrence> {
   @override
   final int typeId = 2;
 
   @override
-  GoalOccurrenceModel read(BinaryReader reader) {
+  GoalOccurrence read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return GoalOccurrenceModel(
-      id: fields[0] as String,
-      userId: fields[1] as String,
-      goalId: fields[2] as String,
-      dateKey: fields[3] as String,
-      scheduledAt: fields[4] as DateTime,
-      status: fields[5] as String,
-      checkedInAt: fields[6] as DateTime?,
-      pillar: fields[7] as String,
-      motivationStyle: fields[8] as String,
-      format: fields[9] as String,
-      faithToggle: fields[10] as bool,
-      messageText: fields[11] as String?,
-      audioUrl: fields[12] as String?,
-      createdAt: fields[13] as DateTime,
-      updatedAt: fields[14] as DateTime,
+    return GoalOccurrence(
+      goalId: fields[0] as String,
+      dateKey: fields[1] as String,
+      scheduledAt: fields[2] as DateTime,
+      status: fields[3] as GoalOccurrenceStatus,
+      checkedInAt: fields[4] as DateTime?,
+      pillar: fields[5] as String?,
+      motivationStyle: fields[6] as String?,
+      format: fields[7] as String?,
+      messageText: fields[8] as String?,
+      audioUrl: fields[9] as String?,
+      goalTitle: fields[12] as String?,
+      createdAt: fields[10] as DateTime?,
+      updatedAt: fields[11] as DateTime?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, GoalOccurrenceModel obj) {
+  void write(BinaryWriter writer, GoalOccurrence obj) {
     writer
-      ..writeByte(15)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.userId)
-      ..writeByte(2)
-      ..write(obj.goalId)
-      ..writeByte(3)
-      ..write(obj.dateKey)
-      ..writeByte(4)
-      ..write(obj.scheduledAt)
-      ..writeByte(5)
-      ..write(obj.status)
-      ..writeByte(6)
-      ..write(obj.checkedInAt)
-      ..writeByte(7)
-      ..write(obj.pillar)
-      ..writeByte(8)
-      ..write(obj.motivationStyle)
-      ..writeByte(9)
-      ..write(obj.format)
-      ..writeByte(10)
-      ..write(obj.faithToggle)
-      ..writeByte(11)
-      ..write(obj.messageText)
-      ..writeByte(12)
-      ..write(obj.audioUrl)
       ..writeByte(13)
+      ..writeByte(0)
+      ..write(obj.goalId)
+      ..writeByte(1)
+      ..write(obj.dateKey)
+      ..writeByte(2)
+      ..write(obj.scheduledAt)
+      ..writeByte(3)
+      ..write(obj.status)
+      ..writeByte(4)
+      ..write(obj.checkedInAt)
+      ..writeByte(5)
+      ..write(obj.pillar)
+      ..writeByte(6)
+      ..write(obj.motivationStyle)
+      ..writeByte(7)
+      ..write(obj.format)
+      ..writeByte(8)
+      ..write(obj.messageText)
+      ..writeByte(9)
+      ..write(obj.audioUrl)
+      ..writeByte(10)
       ..write(obj.createdAt)
-      ..writeByte(14)
-      ..write(obj.updatedAt);
+      ..writeByte(11)
+      ..write(obj.updatedAt)
+      ..writeByte(12)
+      ..write(obj.goalTitle);
   }
 
   @override
@@ -77,7 +71,51 @@ class GoalOccurrenceModelAdapter extends TypeAdapter<GoalOccurrenceModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is GoalOccurrenceModelAdapter &&
+      other is GoalOccurrenceAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class GoalOccurrenceStatusAdapter extends TypeAdapter<GoalOccurrenceStatus> {
+  @override
+  final int typeId = 5;
+
+  @override
+  GoalOccurrenceStatus read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return GoalOccurrenceStatus.pending;
+      case 1:
+        return GoalOccurrenceStatus.completed;
+      case 2:
+        return GoalOccurrenceStatus.skipped;
+      default:
+        return GoalOccurrenceStatus.pending;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, GoalOccurrenceStatus obj) {
+    switch (obj) {
+      case GoalOccurrenceStatus.pending:
+        writer.writeByte(0);
+        break;
+      case GoalOccurrenceStatus.completed:
+        writer.writeByte(1);
+        break;
+      case GoalOccurrenceStatus.skipped:
+        writer.writeByte(2);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GoalOccurrenceStatusAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

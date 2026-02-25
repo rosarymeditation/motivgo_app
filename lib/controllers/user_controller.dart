@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:rosary/model/goal_occurrence_model.dart';
 
 import '../data/repository/user_repo.dart';
 import '../model/goal_model.dart';
@@ -13,7 +14,19 @@ class UserController extends GetxController {
   var user = Rxn<UserModel>();
   var goal = Rxn<GoalModel>();
 
-  // Hive box
+  var goals = RxList<GoalModel>([]);
+ 
+  void loadGoals() {
+    final storage = HiveStorage();
+    goals.value = storage.getAllGoals();
+    user.value = storage.getUser();
+    print("Users---------------------------------------------------");
+    print(user.value?.firstName);
+    print("Users---------------------------------------------------");
+  }
+
+  
+
   late Box<UserModel> _userBox;
   @override
   void onInit() {
@@ -22,6 +35,7 @@ class UserController extends GetxController {
 
     // Load user from Hive
     loadUser();
+   // loadGoalOccurences();
   }
 
   void loadUser() {
@@ -74,9 +88,7 @@ class UserController extends GetxController {
 
       // Save user
       final hiveUser = UserModel.fromJson(userJson);
-      print("Hive output------------");
-      print(hiveUser.email);
-      print(hiveUser.firstName);
+
       await storage.saveUser(hiveUser);
 
       // Debug
@@ -91,6 +103,21 @@ class UserController extends GetxController {
     }
 
     return responseModel;
+  }
+
+  String getGreeting() {
+    final name = user.value?.firstName ?? "";
+    final hour = DateTime.now().hour;
+
+    if (hour >= 5 && hour < 12) {
+      return "🌅 Good Morning${name.isNotEmpty ? ', $name' : ''}!";
+    } else if (hour >= 12 && hour < 17) {
+      return "☀️ Good Afternoon${name.isNotEmpty ? ', $name' : ''}!";
+    } else if (hour >= 17 && hour < 21) {
+      return "🌇 Good Evening${name.isNotEmpty ? ', $name' : ''}!";
+    } else {
+      return "🌙 Good Night${name.isNotEmpty ? ', $name' : ''}!";
+    }
   }
   // Future<void> setTemplate(String template) async {
   //   //await userRepo.saveTemplate(template);
@@ -110,4 +137,19 @@ class UserController extends GetxController {
   // bool getHasSeenSettings() {
   //   return userRepo.getHasSeenSettings();
   // }
+  GoalModel? getNextGoal() {
+    final storage = HiveStorage();
+    return storage.getNextGoal();
+  }
+
+  DateTime? getNextOccurrence(GoalModel goal) {
+    final storage = HiveStorage();
+    return storage.getNextTriggerForGoal(goal);
+  }
+
+  Future<bool> clearSharedData() async {
+    final storage = HiveStorage();
+    await storage.clearAuth();
+    return userRepo.clearSharedData();
+  }
 }

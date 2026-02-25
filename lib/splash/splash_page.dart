@@ -67,12 +67,12 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
 
-    Get.offAndToNamed(RouteHelpers.landingPage);
-    // if (hasLogin) {
-    //   Get.offAndToNamed(RouteHelpers.dashboard);
-    // } else {
-    //   Get.offAndToNamed(RouteHelpers.landingPage);
-    // }
+    //Get.offAndToNamed(RouteHelpers.landingPage);
+    if (hasLogin) {
+      Get.offAndToNamed(RouteHelpers.bottomNav);
+    } else {
+      Get.offAndToNamed(RouteHelpers.landingPage);
+    }
   }
 
   @override

@@ -23,6 +23,16 @@ class UserRepo {
     apiClient.updateHeader(token);
     return await sharedPreferences.setString(AppConstant.TOKEN, token);
   }
+
+   bool clearSharedData() {
+    sharedPreferences.clear();
+    sharedPreferences.remove(AppConstant.TOKEN);
+    // sharedPreferences.remove(AppConstant.PASSWORD);
+    // sharedPreferences.remove(AppConstants.PASSWORD);
+    apiClient.token = '';
+    apiClient.updateHeader('');
+    return true;
+  }
   // Future<String> getTemplate() async {
   //   //return sharedPreferences.getString(AppConstant.TEMPLATE) ?? "";
   // }

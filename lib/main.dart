@@ -10,9 +10,10 @@ import 'package:rosary/model/goal_model.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'controllers/goal_controller.dart';
 import 'controllers/user_controller.dart';
-import 'data/repository/user_repo.dart';
+import 'model/goal_occurrence_model.dart';
 import 'model/user_model.dart';
 import 'route/route_helpers.dart';
+import 'service/midnight_trigger.dart';
 import 'themes/my_themes.dart';
 import 'utils/hive_storage.dart';
 import 'utils/messages.dart';
@@ -25,37 +26,51 @@ Future<void> main() async {
   // 1️⃣ Initialize Timezone
   tz.initializeTimeZones();
 
-  // 2️⃣ Initialize Hive
+  // 2️⃣ Initialize Hive + Register Adapters
   await Hive.initFlutter();
-  //   await Hive.deleteBoxFromDisk(HiveStorage.userBox);
-  // await Hive.deleteBoxFromDisk(HiveStorage.authBox);
+
+
   if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(UserModelAdapter());
   if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(GoalModelAdapter());
+  if (!Hive.isAdapterRegistered(5))
+    Hive.registerAdapter(GoalOccurrenceStatusAdapter()); // enum first
+  if (!Hive.isAdapterRegistered(2))
+    Hive.registerAdapter(GoalOccurrenceAdapter()); // class second
+
+  // 3️⃣ Open Hive Boxes
   if (!Hive.isBoxOpen(HiveStorage.userBox)) {
     await Hive.openBox<UserModel>(HiveStorage.userBox);
   }
   if (!Hive.isBoxOpen('authBox')) {
     await Hive.openBox('authBox');
   }
-   if (!Hive.isBoxOpen(HiveStorage.goalBox)) {
+  if (!Hive.isBoxOpen(HiveStorage.goalBox)) {
     await Hive.openBox<GoalModel>(HiveStorage.goalBox);
   }
+  if (!Hive.isBoxOpen('goal_occurrences')) {
+    await Hive.openBox<GoalOccurrence>('goal_occurrences');
+  }
 
-  // 3️⃣ Initialize services and dependencies
+  // 4️⃣ Initialize Services & Dependencies (GetX, repos, etc.)
   Map<String, Map<String, String>> languages = await dep.init();
 
-  // 4️⃣ Initialize Controllers
-  
+  // 5️⃣ Initialize Controllers
   Get.put(
     UserController(userRepo: Get.find()),
-    permanent: true, // 🔥 VERY IMPORTANT
+    permanent: true,
   );
   Get.put(GoalController(userRepo: Get.find()));
 
-  // 5️⃣ Initialize Local Notifications
+  // 6️⃣ Initialize Local Notifications (AlarmService)
   await Future.wait([AlarmService().init()]);
 
-  // 7️⃣ Configure RevenueCat Purchases
+  // 7️⃣ Initialize Midnight Trigger — AFTER boxes, deps & controllers are ready
+  await MidnightTrigger.init();
+  await MidnightTrigger.schedule();
+  await MidnightTrigger
+      .catchUpMissedOccurrences(); // ✅ goals box is open and populated
+
+  // 8️⃣ Configure RevenueCat
   await Purchases.setDebugLogsEnabled(true);
   await Purchases.configure(
     PurchasesConfiguration(
@@ -65,24 +80,18 @@ Future<void> main() async {
     ),
   );
 
-  // 8️⃣ Run the app
+  // 9️⃣ Run the App
   runApp(MyApp(languages: languages));
 }
 
 // ----------------------------
-// OneSignal initialization
+// OneSignal initialization (disabled for now)
 // ----------------------------
 Future<void> initOneSignal() async {
   final oneSignalAppId = Platform.isAndroid
       ? "3e329aeb-13ad-40e6-a204-15e11f37a968"
       : "9689afb9-bd7f-4f10-8a06-a9e5d9e1b43d";
-
-  //await OneSignal.shared.setAppId(oneSignalAppId);
-
-  // Request user permission for notifications (iOS)
-  // final status = await OneSignal.shared.promptUserForPushNotificationPermission(
-  //   fallbackToSettings: true,
-  // );
+  // await OneSignal.shared.setAppId(oneSignalAppId);
 }
 
 // ----------------------------
@@ -125,9 +134,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  // ----------------------------
-  // Helper to dismiss keyboard
-  // ----------------------------
   void _dismissKeyboard() {
     FocusScopeNode currentFocus = FocusScope.of(context);
     if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
@@ -135,9 +141,6 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  // ----------------------------
-  // Check for Android In-App Updates
-  // ----------------------------
   Future<void> _checkForUpdate() async {
     if (!Platform.isAndroid) return;
     try {

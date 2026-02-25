@@ -6,7 +6,6 @@ import 'package:timezone/data/latest_all.dart' as tzdata;
 
 import '../enums/time_enum.dart';
 
-
 class AlarmService {
   // ---------------- Singleton ----------------
   static final AlarmService _instance = AlarmService._internal();
@@ -62,7 +61,6 @@ class AlarmService {
 
   Future<void> _requestAndroidPermission() async {
     final status = await Permission.notification.status;
-
     if (status.isDenied) {
       await Permission.notification.request();
     } else if (status.isPermanentlyDenied) {
@@ -71,7 +69,7 @@ class AlarmService {
   }
 
   // ============================================================
-  // PUBLIC SCHEDULER (MAIN METHOD)
+  // PUBLIC SCHEDULER
   // ============================================================
 
   Future<void> scheduleAlarm({
@@ -81,8 +79,8 @@ class AlarmService {
     required int hour,
     required int minute,
     RepeatType repeatType = RepeatType.none,
-    List<int>? weekdays, // For weekly
-    int? dayOfMonth, // For monthly
+    List<int>? weekdays,
+    int? dayOfMonth,
   }) async {
     await init();
 
@@ -90,19 +88,96 @@ class AlarmService {
       case RepeatType.none:
         await _scheduleOneTime(id, title, body, hour, minute);
         break;
-
       case RepeatType.weekly:
         if (weekdays == null || weekdays.isEmpty) return;
         await _scheduleWeekly(id, title, body, hour, minute, weekdays);
         break;
-
       case RepeatType.monthly:
         if (dayOfMonth == null) return;
         await _scheduleMonthly(id, title, body, hour, minute, dayOfMonth);
         break;
-
       case RepeatType.yearly:
         await _scheduleYearly(id, title, body, hour, minute);
+        break;
+    }
+  }
+
+  // ============================================================
+  // SUPPRESS FOR TODAY ✅ — now INSIDE the class
+  // ============================================================
+
+  Future<void> suppressForToday({
+    required int alarmId,
+    required String title,
+    required String body,
+    required int hour,
+    required int minute,
+    required String repeatType,
+    List<int>? weekdays,
+    int? dayOfMonth,
+  }) async {
+    await init();
+
+    // 1. Cancel today's alarm
+    await _notifications.cancel(alarmId);
+    print('🔕 Alarm $alarmId suppressed for today');
+
+    // 2. Reschedule from tomorrow
+    switch (repeatType) {
+      case 'weekly':
+        if (weekdays == null || weekdays.isEmpty) return;
+        for (int i = 0; i < weekdays.length; i++) {
+          final date =
+              _nextInstanceOfWeekdayFromTomorrow(weekdays[i], hour, minute);
+          await _notifications.zonedSchedule(
+            alarmId + i,
+            title,
+            body,
+            date,
+            _notificationDetails(),
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+            matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime,
+          );
+        }
+        break;
+
+      case 'monthly':
+        if (dayOfMonth == null) return;
+        final monthDate =
+            _nextInstanceOfMonthFromTomorrow(dayOfMonth, hour, minute);
+        await _notifications.zonedSchedule(
+          alarmId,
+          title,
+          body,
+          monthDate,
+          _notificationDetails(),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+        );
+        break;
+
+      case 'yearly':
+        final yearDate = _nextInstanceOfYearFromTomorrow(hour, minute);
+        await _notifications.zonedSchedule(
+          alarmId,
+          title,
+          body,
+          yearDate,
+          _notificationDetails(),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          matchDateTimeComponents: DateTimeComponents.dateAndTime,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+        );
+        break;
+
+      case 'none':
+      default:
+        // One-time — just cancel, no reschedule
         break;
     }
   }
@@ -114,7 +189,6 @@ class AlarmService {
   Future<void> _scheduleOneTime(
       int id, String title, String body, int hour, int minute) async {
     final scheduledDate = _nextInstance(hour, minute);
-
     await _notifications.zonedSchedule(
       id,
       title,
@@ -128,7 +202,7 @@ class AlarmService {
   }
 
   // ============================================================
-  // WEEKLY (MULTIPLE DAYS SUPPORTED)
+  // WEEKLY
   // ============================================================
 
   Future<void> _scheduleWeekly(
@@ -141,7 +215,6 @@ class AlarmService {
   ) async {
     for (int i = 0; i < weekdays.length; i++) {
       final date = _nextInstanceOfWeekday(weekdays[i], hour, minute);
-
       await _notifications.zonedSchedule(
         id + i,
         title,
@@ -169,7 +242,6 @@ class AlarmService {
     int dayOfMonth,
   ) async {
     final date = _nextInstanceOfMonth(dayOfMonth, hour, minute);
-
     await _notifications.zonedSchedule(
       id,
       title,
@@ -195,7 +267,6 @@ class AlarmService {
     int minute,
   ) async {
     final date = _nextInstanceOfYear(hour, minute);
-
     await _notifications.zonedSchedule(
       id,
       title,
@@ -210,98 +281,76 @@ class AlarmService {
   }
 
   // ============================================================
-  // DATE HELPERS
+  // DATE HELPERS — FROM NOW
   // ============================================================
 
   tz.TZDateTime _nextInstance(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-
-    var scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
-
+    var scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
-
     return scheduled;
   }
 
- tz.TZDateTime _nextInstanceOfWeekday(int weekday, int hour, int minute) {
+  tz.TZDateTime _nextInstanceOfWeekday(int weekday, int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-
-    tz.TZDateTime scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
-
-    // Move forward until correct weekday AND future time
+    tz.TZDateTime scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     while (scheduled.weekday != weekday || scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
-
     return scheduled;
   }
 
   tz.TZDateTime _nextInstanceOfMonth(int day, int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-
-    var scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      day,
-      hour,
-      minute,
-    );
-
+    var scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, day, hour, minute);
     if (scheduled.isBefore(now)) {
-      scheduled = tz.TZDateTime(
-        tz.local,
-        now.year,
-        now.month + 1,
-        day,
-        hour,
-        minute,
-      );
+      scheduled =
+          tz.TZDateTime(tz.local, now.year, now.month + 1, day, hour, minute);
     }
-
     return scheduled;
   }
 
   tz.TZDateTime _nextInstanceOfYear(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-
-    var scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
-
+    var scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
       scheduled = tz.TZDateTime(
-        tz.local,
-        now.year + 1,
-        now.month,
-        now.day,
-        hour,
-        minute,
-      );
+          tz.local, now.year + 1, now.month, now.day, hour, minute);
     }
-
     return scheduled;
+  }
+
+  // ============================================================
+  // DATE HELPERS — FROM TOMORROW (for suppress)
+  // ============================================================
+
+  tz.TZDateTime _nextInstanceOfWeekdayFromTomorrow(
+      int weekday, int hour, int minute) {
+    final tomorrow = tz.TZDateTime.now(tz.local).add(const Duration(days: 1));
+    tz.TZDateTime scheduled = tz.TZDateTime(
+        tz.local, tomorrow.year, tomorrow.month, tomorrow.day, hour, minute);
+    while (scheduled.weekday != weekday) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+    return scheduled;
+  }
+
+  tz.TZDateTime _nextInstanceOfMonthFromTomorrow(
+      int day, int hour, int minute) {
+    final now = tz.TZDateTime.now(tz.local);
+    return tz.TZDateTime(tz.local, now.year, now.month + 1, day, hour, minute);
+  }
+
+  tz.TZDateTime _nextInstanceOfYearFromTomorrow(int hour, int minute) {
+    final now = tz.TZDateTime.now(tz.local);
+    return tz.TZDateTime(
+        tz.local, now.year + 1, now.month, now.day, hour, minute);
   }
 
   // ============================================================
@@ -342,14 +391,13 @@ class AlarmService {
       sound: 'aiv.wav',
     );
 
-    return NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+    return NotificationDetails(android: androidDetails, iOS: iosDetails);
   }
 }
 
-// Required for background tap handling
+// ============================================================
+// BACKGROUND TAP — must be top-level outside class
+// ============================================================
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
   print("Background notification tapped: ${response.payload}");

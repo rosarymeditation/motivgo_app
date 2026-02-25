@@ -4,10 +4,11 @@
 import 'package:get/get.dart';
 
 import '../enums/pillar_type.dart';
+import '../model/goal_occurrence_model.dart';
 class PillarController extends GetxController {
   /// Selected pillars (observable list)
   final RxList<PillarType> selected = <PillarType>[].obs;
-
+  
   /// Tier comes from user profile (API). Set it when user logs in/registers.
   final RxString tier = "free".obs; // "free" | "premium"
 

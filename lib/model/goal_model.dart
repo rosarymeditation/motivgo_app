@@ -4,6 +4,8 @@ part 'goal_model.g.dart';
 
 @HiveType(typeId: 1)
 class GoalModel extends HiveObject {
+  // ================= BASIC =================
+
   @HiveField(0)
   String? id;
 
@@ -16,40 +18,55 @@ class GoalModel extends HiveObject {
   @HiveField(3)
   String? pillar;
 
+  // ================= SCHEDULING =================
+
   @HiveField(4)
-  String? reminderTime;
+  int? alarmId; // IMPORTANT for cancelling/updating alarm
 
   @HiveField(5)
-  String? frequency;
+  DateTime? scheduledAt; // used for one-time
 
   @HiveField(6)
-  List<int>? customDays;
+  String? repeatType;
+  // "none", "weekly", "monthly", "yearly"
 
   @HiveField(7)
-  DateTime? startDate;
+  List<int>? weekdays;
+  // 1=Mon ... 7=Sun (for weekly)
 
   @HiveField(8)
-  DateTime? endDate;
+  int? dayOfMonth;
+  // for monthly
 
   @HiveField(9)
-  String? motivationStyle;
+  int? hour;
 
   @HiveField(10)
-  String? format;
+  int? minute;
+
+  // ================= USER SETTINGS =================
 
   @HiveField(11)
-  bool? faithToggle;
+  String? motivationStyle;
 
   @HiveField(12)
-  bool? active;
+  String? format;
 
   @HiveField(13)
-  int? currentStreak;
+  bool? faithToggle;
 
   @HiveField(14)
-  int? bestStreak;
+  bool? active;
+
+  // ================= STREAK =================
 
   @HiveField(15)
+  int? currentStreak;
+
+  @HiveField(16)
+  int? bestStreak;
+
+  @HiveField(17)
   String? lastCompletedDateKey;
 
   GoalModel({
@@ -57,11 +74,13 @@ class GoalModel extends HiveObject {
     this.userId,
     this.title,
     this.pillar,
-    this.reminderTime,
-    this.frequency = "daily",
-    this.customDays,
-    this.startDate,
-    this.endDate,
+    this.alarmId,
+    this.scheduledAt,
+    this.repeatType = "none",
+    this.weekdays,
+    this.dayOfMonth,
+    this.hour,
+    this.minute,
     this.motivationStyle,
     this.format = "text",
     this.faithToggle = false,
@@ -71,33 +90,37 @@ class GoalModel extends HiveObject {
     this.lastCompletedDateKey,
   });
 
+  // ================= FROM JSON =================
+
   factory GoalModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) return GoalModel();
+
     return GoalModel(
       id: json['_id']?.toString(),
       userId: json['userId']?.toString(),
       title: json['title']?.toString(),
       pillar: json['pillar']?.toString(),
-      reminderTime: json['reminderTime']?.toString(),
-      frequency: json['frequency']?.toString() ?? "daily",
-      customDays: json['customDays'] is List
-          ? List<int>.from((json['customDays'] as List).whereType<int>())
-          : [],
-      startDate: json['startDate'] != null
-          ? DateTime.tryParse(json['startDate'].toString())
-          : DateTime.now(),
-      endDate: json['endDate'] != null
-          ? DateTime.tryParse(json['endDate'].toString())
+      alarmId: json['alarmId'],
+      scheduledAt: json['scheduledAt'] != null
+          ? DateTime.tryParse(json['scheduledAt'])
           : null,
-      motivationStyle: json['motivationStyle']?.toString(),
-      format: json['format']?.toString() ?? "text",
+      repeatType: json['repeatType'] ?? "none",
+      weekdays:
+          json['weekdays'] != null ? List<int>.from(json['weekdays']) : [],
+      dayOfMonth: json['dayOfMonth'],
+      hour: json['hour'],
+      minute: json['minute'],
+      motivationStyle: json['motivationStyle'],
+      format: json['format'] ?? "text",
       faithToggle: json['faithToggle'] ?? false,
       active: json['active'] ?? true,
       currentStreak: json['currentStreak'] ?? 0,
       bestStreak: json['bestStreak'] ?? 0,
-      lastCompletedDateKey: json['lastCompletedDateKey']?.toString(),
+      lastCompletedDateKey: json['lastCompletedDateKey'],
     );
   }
+
+  // ================= TO JSON =================
 
   Map<String, dynamic> toJson() {
     return {
@@ -105,11 +128,13 @@ class GoalModel extends HiveObject {
       "userId": userId,
       "title": title,
       "pillar": pillar,
-      "reminderTime": reminderTime,
-      "frequency": frequency,
-      "customDays": customDays,
-      "startDate": startDate?.toIso8601String(),
-      "endDate": endDate?.toIso8601String(),
+      "alarmId": alarmId,
+      "scheduledAt": scheduledAt?.toIso8601String(),
+      "repeatType": repeatType,
+      "weekdays": weekdays,
+      "dayOfMonth": dayOfMonth,
+      "hour": hour,
+      "minute": minute,
       "motivationStyle": motivationStyle,
       "format": format,
       "faithToggle": faithToggle,
@@ -118,5 +143,42 @@ class GoalModel extends HiveObject {
       "bestStreak": bestStreak,
       "lastCompletedDateKey": lastCompletedDateKey,
     };
+  }
+
+  bool isDueToday() {
+    if (active != true) return false; // skip inactive goals
+
+    final now = DateTime.now();
+    final todayWeekday = now.weekday; // 1=Mon ... 7=Sun (matches your schema)
+    final todayDayOfMonth = now.day;
+
+    switch (repeatType) {
+      case "none":
+        // One-time goal — due only on its scheduled date
+        if (scheduledAt == null) return false;
+        return _isSameDay(scheduledAt!, now);
+
+      case "weekly":
+        // Due if today's weekday is in the weekdays list
+        if (weekdays == null || weekdays!.isEmpty) return false;
+        return weekdays!.contains(todayWeekday);
+
+      case "monthly":
+        // Due if today's day-of-month matches
+        if (dayOfMonth == null) return false;
+        return dayOfMonth == todayDayOfMonth;
+
+      case "yearly":
+        // Due if today matches the month AND day of scheduledAt
+        if (scheduledAt == null) return false;
+        return scheduledAt!.month == now.month && scheduledAt!.day == now.day;
+
+      default:
+        return false;
+    }
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }

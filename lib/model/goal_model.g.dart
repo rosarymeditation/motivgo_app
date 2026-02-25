@@ -21,25 +21,27 @@ class GoalModelAdapter extends TypeAdapter<GoalModel> {
       userId: fields[1] as String?,
       title: fields[2] as String?,
       pillar: fields[3] as String?,
-      reminderTime: fields[4] as String?,
-      frequency: fields[5] as String?,
-      customDays: (fields[6] as List?)?.cast<int>(),
-      startDate: fields[7] as DateTime?,
-      endDate: fields[8] as DateTime?,
-      motivationStyle: fields[9] as String?,
-      format: fields[10] as String?,
-      faithToggle: fields[11] as bool?,
-      active: fields[12] as bool?,
-      currentStreak: fields[13] as int?,
-      bestStreak: fields[14] as int?,
-      lastCompletedDateKey: fields[15] as String?,
+      alarmId: fields[4] as int?,
+      scheduledAt: fields[5] as DateTime?,
+      repeatType: fields[6] as String?,
+      weekdays: (fields[7] as List?)?.cast<int>(),
+      dayOfMonth: fields[8] as int?,
+      hour: fields[9] as int?,
+      minute: fields[10] as int?,
+      motivationStyle: fields[11] as String?,
+      format: fields[12] as String?,
+      faithToggle: fields[13] as bool?,
+      active: fields[14] as bool?,
+      currentStreak: fields[15] as int?,
+      bestStreak: fields[16] as int?,
+      lastCompletedDateKey: fields[17] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, GoalModel obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -49,28 +51,32 @@ class GoalModelAdapter extends TypeAdapter<GoalModel> {
       ..writeByte(3)
       ..write(obj.pillar)
       ..writeByte(4)
-      ..write(obj.reminderTime)
+      ..write(obj.alarmId)
       ..writeByte(5)
-      ..write(obj.frequency)
+      ..write(obj.scheduledAt)
       ..writeByte(6)
-      ..write(obj.customDays)
+      ..write(obj.repeatType)
       ..writeByte(7)
-      ..write(obj.startDate)
+      ..write(obj.weekdays)
       ..writeByte(8)
-      ..write(obj.endDate)
+      ..write(obj.dayOfMonth)
       ..writeByte(9)
-      ..write(obj.motivationStyle)
+      ..write(obj.hour)
       ..writeByte(10)
-      ..write(obj.format)
+      ..write(obj.minute)
       ..writeByte(11)
-      ..write(obj.faithToggle)
+      ..write(obj.motivationStyle)
       ..writeByte(12)
-      ..write(obj.active)
+      ..write(obj.format)
       ..writeByte(13)
-      ..write(obj.currentStreak)
+      ..write(obj.faithToggle)
       ..writeByte(14)
-      ..write(obj.bestStreak)
+      ..write(obj.active)
       ..writeByte(15)
+      ..write(obj.currentStreak)
+      ..writeByte(16)
+      ..write(obj.bestStreak)
+      ..writeByte(17)
       ..write(obj.lastCompletedDateKey);
   }
 
