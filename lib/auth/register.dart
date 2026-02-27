@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rosary/utils/hive_storage.dart';
 
 import '../controllers/user_controller.dart';
 import '../route/route_helpers.dart';
@@ -58,6 +59,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     if (response.isSuccess) {
+      await HiveStorage.resetAll();
       Get.offAllNamed(RouteHelpers.focusAreaPage);
     } else {
       Get.snackbar(

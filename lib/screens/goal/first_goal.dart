@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rosary/enums/pillar_type.dart';
 import 'package:rosary/route/route_helpers.dart';
-import 'package:rosary/utils/notification_service.dart';
 
-import '../controllers/goal_controller.dart';
-import '../controllers/pillar_controller.dart';
-import '../enums/motivational_style_type.dart';
-import '../enums/time_enum.dart';
-import '../widgets/motiv_label.dart';
-import '../widgets/primary_button.dart';
+import '../../controllers/goal_controller.dart';
+import '../../controllers/pillar_controller.dart';
+import '../../enums/motivational_style_type.dart';
+import '../../widgets/motiv_label.dart';
+import '../../widgets/primary_button.dart';
 
 enum RepeatOption { none, weekly, monthly, yearly }
 

@@ -103,25 +103,25 @@ extension PillarTypeExtension on PillarType {
   String get iconAsset {
     switch (this) {
       case PillarType.personalGrowth:
-        return "assets/icons/personal_growth.png";
+        return "assets/icon/personal.png";
 
       case PillarType.healthFitness:
-        return "assets/icons/health_fitness.png";
+        return "assets/icon/health.png";
 
       case PillarType.spiritualGrowth:
-        return "assets/icons/spiritual_growth.png";
+        return "assets/icon/spiritual.png";
 
       case PillarType.dailyLife:
-        return "assets/icons/daily_life.png";
+        return "assets/icon/habit.png";
 
       case PillarType.emotionalWellness:
-        return "assets/icons/emotional_wellness.png";
+        return "assets/icon/wellness.png";
 
       case PillarType.businessMoney:
-        return "assets/icons/business_money.png";
+        return "assets/icon/business.png";
 
       case PillarType.learningCareer:
-        return "assets/icons/learning_career.png";
+        return "assets/icon/learning.png";
     }
   }
 

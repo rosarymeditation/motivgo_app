@@ -181,4 +181,45 @@ class GoalModel extends HiveObject {
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
+  GoalModel copyWith({
+    String? id,
+    String? userId,
+    String? title,
+    String? pillar,
+    int? alarmId,
+    DateTime? scheduledAt,
+    String? repeatType,
+    List<int>? weekdays,
+    int? dayOfMonth,
+    int? hour,
+    int? minute,
+    String? motivationStyle,
+    String? format,
+    bool? faithToggle,
+    bool? active,
+    int? currentStreak,
+    int? bestStreak,
+    String? lastCompletedDateKey,
+  }) {
+    return GoalModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      title: title ?? this.title,
+      pillar: pillar ?? this.pillar,
+      alarmId: alarmId ?? this.alarmId,
+      scheduledAt: scheduledAt ?? this.scheduledAt,
+      repeatType: repeatType ?? this.repeatType,
+      weekdays: weekdays ?? this.weekdays,
+      dayOfMonth: dayOfMonth ?? this.dayOfMonth,
+      hour: hour ?? this.hour,
+      minute: minute ?? this.minute,
+      motivationStyle: motivationStyle ?? this.motivationStyle,
+      format: format ?? this.format,
+      faithToggle: faithToggle ?? this.faithToggle,
+      active: active ?? this.active,
+      currentStreak: currentStreak ?? this.currentStreak,
+      bestStreak: bestStreak ?? this.bestStreak,
+      lastCompletedDateKey: lastCompletedDateKey ?? this.lastCompletedDateKey,
+    );
+  }
 }

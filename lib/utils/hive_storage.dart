@@ -255,4 +255,37 @@ class HiveStorage {
   DateTime? getNextTriggerForGoal(GoalModel goal) {
     return _calculateNextTrigger(goal, DateTime.now());
   }
+
+  static Future<void> resetAll() async {
+    await _clearBox(goalBox);
+    await _clearBox(goalOccurrenceBox);
+    await _clearBox(userBox);
+    await _clearBox(authBox);
+    print('🗑️ All Hive boxes cleared');
+  }
+
+  static Future<void> _clearBox(String boxName) async {
+    try {
+      if (Hive.isBoxOpen(boxName)) {
+        await Hive.box(boxName).clear();
+      } else {
+        final box = await Hive.openBox(boxName);
+        await box.clear();
+        await box.close();
+      }
+      print('✅ Cleared: $boxName');
+    } catch (e) {
+      print('❌ Failed to clear $boxName: $e');
+    }
+  }
+
+
+
+  Future<void> deleteOccurrence(GoalOccurrence occurrence) async {
+    final box = Hive.box<GoalOccurrence>(goalOccurrenceBox);
+    final key = box.keys.firstOrNull(
+      (k) => box.get(k) == occurrence,
+    );
+    if (key != null) await box.delete(key);
+  }
 }

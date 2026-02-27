@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 
+import '../enums/pillar_type.dart';
 import '../model/goal_model.dart';
 import '../model/goal_occurrence_model.dart';
 import '../utils/hive_storage.dart';
@@ -29,13 +30,13 @@ class OccurrenceService {
     final exists =
         box.values.any((o) => o.goalId == goalId && o.dateKey == dateKey);
     if (exists) return null;
-
+    final formatedPillar = pillarFromApi(pillar ?? "health_fitness");
     final occurrence = GoalOccurrence(
       goalId: goalId,
       dateKey: dateKey,
       scheduledAt: scheduledAt,
       status: GoalOccurrenceStatus.pending,
-      pillar: pillar,
+      pillar: formatedPillar.label,
       goalTitle: title,
       motivationStyle: motivationStyle,
       format: format,

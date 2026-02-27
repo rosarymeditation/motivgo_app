@@ -1,19 +1,18 @@
-
-
-
 import 'package:get/get.dart';
 
 import '../enums/pillar_type.dart';
-import '../model/goal_occurrence_model.dart';
+
 class PillarController extends GetxController {
   /// Selected pillars (observable list)
   final RxList<PillarType> selected = <PillarType>[].obs;
-  
+
   /// Tier comes from user profile (API). Set it when user logs in/registers.
   final RxString tier = "free".obs; // "free" | "premium"
 
   /// Max allowed based on tier
   int get maxAllowed => tier.value == "premium" ? 999 : 2;
+
+  var isForFirstGoal = true.obs;
 
   /// UI helper: show "2 selected" and "limit reached"
   int get count => selected.length;
@@ -22,6 +21,7 @@ class PillarController extends GetxController {
 
   /// Check if a pillar is selected
   bool isSelected(PillarType p) => selected.contains(p);
+  bool isImmutable(PillarType pillar) => immutablePillars.contains(pillar);
 
   /// Try add (returns true if added, false if blocked by limit)
   bool add(PillarType p) {
@@ -29,6 +29,10 @@ class PillarController extends GetxController {
     if (selected.length >= maxAllowed) return false;
     selected.add(p);
     return true;
+  }
+
+  void setIsForFirstGoal(bool val) {
+    isForFirstGoal.value = val;
   }
 
   /// Remove
@@ -49,6 +53,7 @@ class PillarController extends GetxController {
   /// This does NOT block selection; it just stores "desired" choices.
   /// Then you can decide later what to keep.
   final RxList<PillarType> desired = <PillarType>[].obs;
+  final immutablePillars = <PillarType>[].obs;
 
   void toggleDesired(PillarType p) {
     if (desired.contains(p)) {
@@ -56,6 +61,14 @@ class PillarController extends GetxController {
     } else {
       desired.add(p);
     }
+  }
+
+  void setSelectedPillars(List<PillarType> pillars) {
+    immutablePillars.value = [];
+    desired.value = [];
+    desired.addAll(pillars);
+    immutablePillars.addAll(pillars);
+    //selected.assignAll(pillars);
   }
 
   /// Commit desired -> selected based on tier limit

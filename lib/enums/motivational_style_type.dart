@@ -5,6 +5,7 @@ enum MotivationStyle {
   reflective,
   faith,
 }
+
 extension MotivationStyleExtension on MotivationStyle {
   String get apiValue {
     switch (this) {
@@ -33,6 +34,21 @@ extension MotivationStyleExtension on MotivationStyle {
         return "Reflective";
       case MotivationStyle.faith:
         return "Faith-Based";
+    }
+  }
+
+  MotivationStyle motivationStyleFromApi(String value) {
+    switch (value) {
+      case 'gentle':
+        return MotivationStyle.gentle;
+      case 'firm':
+        return MotivationStyle.firm;
+
+      case 'faith':
+        return MotivationStyle.faith;
+      // ✅ add any others you have
+      default:
+        return MotivationStyle.gentle; // safe fallback
     }
   }
 }

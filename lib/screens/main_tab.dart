@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rosary/controllers/user_controller.dart';
 import 'package:rosary/screens/dashboard.dart';
-import 'package:rosary/screens/goals.dart';
+import 'package:rosary/screens/goal/goals.dart';
 import 'package:rosary/screens/insight.dart';
 import 'package:rosary/screens/profile.dart';
 
@@ -19,7 +19,7 @@ class _MainTabState extends State<MainTab> {
   final List<Widget> _pages = [
     DashboardPage(),
     GoalsPage(),
-    QuotePage(),
+    InsightPage(),
     ProfilePage()
     //FeedListScreen(),
   ];

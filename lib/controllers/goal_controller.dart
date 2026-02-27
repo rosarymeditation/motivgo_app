@@ -17,6 +17,7 @@ class GoalController extends GetxController {
   var isLoading = false.obs;
   var goalOccurences = RxList<GoalOccurrence>([]);
   var goals = RxList<GoalModel>([]);
+  var goalForEdit = Rxn<GoalModel>();
 
   @override
   void onInit() {
@@ -35,7 +36,9 @@ class GoalController extends GetxController {
     print("Users---------------------------------------------------");
   }
 
-
+  setGoal(GoalModel goal) {
+    goalForEdit.value = goal;
+  }
 
   /// Save goal & update user
   Future<ResponseModel> saveGoalAndUpdateUser({
@@ -175,4 +178,99 @@ class GoalController extends GetxController {
   //     return "UTC"; // fallback
   //   }
   // }
+
+  Future<ResponseModel> updateGoal(GoalModel updatedGoal) async {
+    isLoading.value = true;
+    late ResponseModel responseModel;
+
+    try {
+      final storage = HiveStorage();
+
+      // ✅ Save to Hive
+      await storage.saveGoal(updatedGoal);
+
+      // ✅ Handle alarm based on active state
+      if (updatedGoal.active ?? true) {
+        // Active — reschedule
+        await AlarmService().cancelAlarm(updatedGoal.alarmId ?? 0);
+        await AlarmService().scheduleAlarm(
+          id: updatedGoal.alarmId ?? 0,
+          title: "Goal Reminder",
+          body: updatedGoal.title?.trim() ?? '',
+          hour: updatedGoal.hour ?? 0,
+          minute: updatedGoal.minute ?? 0,
+          repeatType: _mapRepeatType(updatedGoal.repeatType ?? 'none'),
+          weekdays: updatedGoal.weekdays,
+          dayOfMonth: updatedGoal.dayOfMonth,
+        );
+        print('▶️ Alarm scheduled for: ${updatedGoal.title}');
+      } else {
+        // Paused — cancel only, don't reschedule
+        await AlarmService().cancelAlarm(updatedGoal.alarmId ?? 0);
+        print('⏸️ Alarm cancelled for: ${updatedGoal.title}');
+      }
+
+      loadGoals();
+      responseModel = ResponseModel(true, "Goal updated successfully");
+    } catch (e) {
+      responseModel = ResponseModel(false, "Failed to update goal: $e");
+    } finally {
+      isLoading.value = false;
+    }
+
+    return responseModel;
+  }
+
+// ============================================================
+// DELETE GOAL — Hive only
+// ============================================================
+
+  Future<ResponseModel> deleteGoal(GoalModel goal) async {
+    isLoading.value = true;
+    late ResponseModel responseModel;
+
+    try {
+      final storage = HiveStorage();
+
+      // ✅ Remove goal from Hive
+      await storage.deleteGoal(goal.id ?? '');
+
+      // ✅ Cancel alarm
+      await AlarmService().cancelAlarm(goal.alarmId ?? 0);
+
+      // ✅ Wipe all occurrences for this goal
+      await _deleteGoalOccurrences(goal.id ?? '');
+
+      // ✅ Refresh in-memory lists
+      loadGoals();
+      loadGoalOccurences();
+
+      responseModel = ResponseModel(true, "Goal deleted successfully");
+    } catch (e) {
+      responseModel = ResponseModel(false, "Failed to delete goal: $e");
+    } finally {
+      isLoading.value = false;
+    }
+
+    return responseModel;
+  }
+
+// ============================================================
+// PRIVATE — wipe occurrences for a deleted goal
+// ============================================================
+
+  Future<void> _deleteGoalOccurrences(String goalId) async {
+    final storage = HiveStorage();
+    final all = storage.getAllOccurences();
+
+    for (final occ in all) {
+      if (occ.goalId == goalId) {
+        await storage.deleteOccurrence(occ);
+      }
+    }
+
+    print('🗑️ Deleted all occurrences for goal: $goalId');
+  }
+
+ 
 }

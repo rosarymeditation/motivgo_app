@@ -1,7 +1,5 @@
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:rosary/model/goal_occurrence_model.dart';
-
 import '../data/repository/user_repo.dart';
 import '../model/goal_model.dart';
 import '../model/response_model.dart';

@@ -1,12 +1,14 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:rosary/controllers/goal_controller.dart';
+import 'package:rosary/controllers/pillar_controller.dart';
 import 'package:rosary/data/repository/goal_repo.dart';
 import 'dart:convert'; // Importing dart:convert for json.decode
 
 import 'package:rosary/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../controllers/insight_controller.dart';
 import '../controllers/user_controller.dart';
 import '../data/api/api_client.dart';
 import '../data/repository/user_repo.dart';
@@ -105,6 +107,8 @@ Future<Map<String, Map<String, String>>> init() async {
   // Get.lazyPut(() => OTPController());
   // Get.lazyPut(() => DrawController(drawRepo: Get.find()));
   // Get.lazyPut(() => AuthController(authRepo: Get.find()));
+  Get.lazyPut(() => InsightController());
+  Get.lazyPut(() => PillarController());
   Get.lazyPut(() => UserController(userRepo: Get.find()));
   Get.lazyPut(() => GoalController(userRepo: Get.find()));
   // Loading language data

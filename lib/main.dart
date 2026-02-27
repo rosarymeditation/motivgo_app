@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:rosary/controllers/pillar_controller.dart';
 import 'package:rosary/model/goal_model.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'controllers/goal_controller.dart';
@@ -14,6 +15,7 @@ import 'model/goal_occurrence_model.dart';
 import 'model/user_model.dart';
 import 'route/route_helpers.dart';
 import 'service/midnight_trigger.dart';
+import 'service/seed_service.dart';
 import 'themes/my_themes.dart';
 import 'utils/hive_storage.dart';
 import 'utils/messages.dart';
@@ -28,7 +30,6 @@ Future<void> main() async {
 
   // 2️⃣ Initialize Hive + Register Adapters
   await Hive.initFlutter();
-
 
   if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(UserModelAdapter());
   if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(GoalModelAdapter());
@@ -50,7 +51,7 @@ Future<void> main() async {
   if (!Hive.isBoxOpen('goal_occurrences')) {
     await Hive.openBox<GoalOccurrence>('goal_occurrences');
   }
-
+  await SeedService.resetAndReseed();
   // 4️⃣ Initialize Services & Dependencies (GetX, repos, etc.)
   Map<String, Map<String, String>> languages = await dep.init();
 
@@ -60,6 +61,7 @@ Future<void> main() async {
     permanent: true,
   );
   Get.put(GoalController(userRepo: Get.find()));
+   Get.put(PillarController());
 
   // 6️⃣ Initialize Local Notifications (AlarmService)
   await Future.wait([AlarmService().init()]);
