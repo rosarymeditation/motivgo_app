@@ -8,17 +8,19 @@ import 'package:share_plus/share_plus.dart';
 import '../model/language_model.dart';
 
 class AppConstant {
-  // https://rosary-api.onrender.com/api/
+  // https://motivgo-api.onrender.com/api/
 
-  //static const String BASE_URL = "https://motivgo-api.onrender.com/api/";
+  static const String BASE_URL = "https://motivgo-api.onrender.com/api/";
   // static const String BASE_URL =
   // "https://catholic-dating-server.onrender.com/api/";
-  static const String BASE_URL = "http://localhost:8001/api/";
+  //static const String BASE_URL = "http://localhost:8001/api/";
 
   //
   //occupationList
-  static String offerings = Platform.isAndroid ? "deafult" : "ios_offering";
-  static String entitltment = Platform.isAndroid ? "premium" : "ios_pro";
+  static String offerings =
+      Platform.isAndroid ? "android_offering" : "ios_offering";
+  static String entitltment =
+      Platform.isAndroid ? "android_entitlement" : "ios_entitlement";
 
   static const String DETECT_FACE_URL = "detect-face";
   static const String USER_PROFILE_KEY = "user_profile_key";
@@ -69,14 +71,14 @@ class AppConstant {
 
   static const String DEFAULT_AVATAR = "assets/images/avatar.jpg";
   static const String DEFAULT_AVATAR_ONLINE =
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/avatar.jpg";
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/avatar.jpg";
   static const String APP_NAME = "IgboCrush";
   static const DEFAULT_BANNER =
       "https://rosaryapp.s3.eu-west-2.amazonaws.com/banner.jpg";
   static const String SIGN_IN = "Sign In";
   static const String SIGN_UP = "Sign Up";
   static const String SCREEN_SLEEP_MUSIC = "sleep_music";
-  static const String SCREEN_ROSARY = "rosary";
+  static const String SCREEN_ROSARY = "motivgo";
   static const String SCREEN_SONGS = "songs";
   static const String OCCUPATION_LIST = "occupationList";
 
@@ -112,7 +114,8 @@ class AppConstant {
     int max = 999999999; // 12-digit maximum
     return min + random.nextInt(max - min + 1);
   }
-static String formatGoalTime(DateTime goalDate) {
+
+  static String formatGoalTime(DateTime goalDate) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
@@ -133,6 +136,7 @@ static String formatGoalTime(DateTime goalDate) {
 
     return "$dayLabel · $timeLabel";
   }
+
   static List<LanguageModel> languages = [
     LanguageModel(
         imageUrl: "us.jpeg",
@@ -145,8 +149,6 @@ static String formatGoalTime(DateTime goalDate) {
         countryCode: "ES",
         languageName: "Español"),
   ];
-
-
 
   static String getImagePath(String name) {
     return "assets/images/$name";
@@ -240,6 +242,7 @@ static String formatGoalTime(DateTime goalDate) {
   static const String GET_MESSAGE_URL = "getChats";
   static const String GET_ALL_CHATS_URL = "getAllChats";
   static const String CHECK_EMAIL_URL = "checkEmail";
+   static const String SUGGESTION_URL = "suggestion-create";
   static const String REGISTER_URL = "register";
   static const String USER_UPDATE_URL = "user-update";
   static const String UPDATE_REG_URL = "updateReg";
@@ -346,7 +349,6 @@ static String formatGoalTime(DateTime goalDate) {
     return "$age";
   }
 
-  
   static void showCustomFlushbar({
     required BuildContext context,
     required String message,
@@ -356,8 +358,7 @@ static String formatGoalTime(DateTime goalDate) {
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
-   }
+  }
 
   static String formatFacebookTime(DateTime date) {
     final now = DateTime.now();
@@ -399,6 +400,4 @@ Don’t forget to enter my referral code: **$referralCode** 💕
 
     Share.share(message, subject: 'Join me on IgboCrush!');
   }
-
-  
 }

@@ -2,7 +2,7 @@
 
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:rosary/utils/hive_storage.dart';
+import 'package:motivgo/utils/hive_storage.dart';
 import '../model/goal_occurrence_model.dart';
 import '../service/occurrence_service.dart';
 

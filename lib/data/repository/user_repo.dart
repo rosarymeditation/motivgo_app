@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:rosary/model/goal_model.dart';
-import 'package:rosary/model/user_model.dart';
+import 'package:motivgo/model/goal_model.dart';
+import 'package:motivgo/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/constants.dart';
@@ -15,16 +15,22 @@ class UserRepo {
   Future<Response> register(UserModel model) async {
     return apiClient.postData(AppConstant.REGISTER_URL, model.toJson());
   }
+
+  Future<Response> login(UserModel model) async {
+    return apiClient.postData(AppConstant.LOGIN_URL, model.toJson());
+  }
+
   Future<Response> updateUser(UpdateUserWithGoalRequest model) async {
     return apiClient.postData(AppConstant.USER_UPDATE_URL, model.toJson());
   }
+
   Future<bool> saveUserToken(String token) async {
     apiClient.token = token;
     apiClient.updateHeader(token);
     return await sharedPreferences.setString(AppConstant.TOKEN, token);
   }
 
-   bool clearSharedData() {
+  bool clearSharedData() {
     sharedPreferences.clear();
     sharedPreferences.remove(AppConstant.TOKEN);
     // sharedPreferences.remove(AppConstant.PASSWORD);

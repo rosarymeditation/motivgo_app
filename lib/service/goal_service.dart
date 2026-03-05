@@ -1,12 +1,11 @@
 // goal_service.dart
 
 import 'package:hive/hive.dart';
-import 'package:rosary/utils/hive_storage.dart';
+import 'package:motivgo/utils/hive_storage.dart';
 
 import '../model/goal_model.dart';
 
 class GoalService {
-
   static Future<Box<GoalModel>> _openBox() async {
     if (!Hive.isBoxOpen(HiveStorage.goalBox)) {
       return await Hive.openBox<GoalModel>(HiveStorage.goalBox);

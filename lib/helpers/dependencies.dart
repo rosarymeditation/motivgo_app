@@ -1,11 +1,14 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:rosary/controllers/goal_controller.dart';
-import 'package:rosary/controllers/pillar_controller.dart';
-import 'package:rosary/data/repository/goal_repo.dart';
+import 'package:motivgo/controllers/goal_controller.dart';
+import 'package:motivgo/controllers/pillar_controller.dart';
+import 'package:motivgo/controllers/suggestion_controller.dart';
+import 'package:motivgo/data/repository/goal_repo.dart';
+import 'package:motivgo/data/repository/suggestion_repo.dart';
+import 'package:motivgo/screens/suggestion.dart';
 import 'dart:convert'; // Importing dart:convert for json.decode
 
-import 'package:rosary/utils/constants.dart';
+import 'package:motivgo/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../controllers/insight_controller.dart';
@@ -32,6 +35,7 @@ Future<Map<String, Map<String, String>>> init() async {
       () => UserRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
 
   Get.lazyPut(() => GoalRepo(apiClient: Get.find()));
+  Get.lazyPut(() => SuggestionRepo(apiClient: Get.find()));
   // Get.lazyPut(() =>
   //     PersonalDetailRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
 
@@ -109,6 +113,7 @@ Future<Map<String, Map<String, String>>> init() async {
   // Get.lazyPut(() => AuthController(authRepo: Get.find()));
   Get.lazyPut(() => InsightController());
   Get.lazyPut(() => PillarController());
+  Get.lazyPut(() => SuggestionController(suggestionRepo: Get.find()));
   Get.lazyPut(() => UserController(userRepo: Get.find()));
   Get.lazyPut(() => GoalController(userRepo: Get.find()));
   // Loading language data

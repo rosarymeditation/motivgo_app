@@ -1,4 +1,4 @@
-# rosary
+# motivgo
 
 A new Flutter project.
 

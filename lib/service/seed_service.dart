@@ -1,222 +1,43 @@
 // lib/service/seed_service.dart
 
 import 'package:hive/hive.dart';
+import 'package:motivgo/utils/hive_storage.dart';
 import '../model/goal_occurrence_model.dart';
 import '../service/occurrence_service.dart';
 
 class SeedService {
   static Future<void> seedFakeOccurrences() async {
-    final box = Hive.box<GoalOccurrence>('goal_occurrences');
+    final box = Hive.box<GoalOccurrence>(HiveStorage.goalOccurrenceBox);
 
     if (box.isNotEmpty) {
-      print('🌱 Seed skipped — box already has ${box.length} records');
+      print('🌱 Seed skipped — already contains ${box.length} records');
       return;
     }
 
     final now = DateTime.now();
-    final today = OccurrenceService.toDateKey(now);
+    final todayKey = OccurrenceService.toDateKey(now);
 
     final fakeGoals = [
-      {
-        'id': 'goal_001',
-        'title': 'Morning Meditation',
-        'pillar': 'Health & Fitness',
-        'motivationStyle': 'calm',
-        'format': 'text',
-        'hour': 6,
-        'minute': 0,
-        'startDaysAgo': 29,
-      },
-      {
-        'id': 'goal_002',
-        'title': 'Read 10 Pages',
-        'pillar': 'Personal Growth',
-        'motivationStyle': 'motivational',
-        'format': 'text',
-        'hour': 8,
-        'minute': 30,
-        'startDaysAgo': 25,
-      },
-      {
-        'id': 'goal_003',
-        'title': 'Revenue Review',
-        'pillar': 'Business & Money',
-        'motivationStyle': 'analytical',
-        'format': 'text',
-        'hour': 9,
-        'minute': 0,
-        'startDaysAgo': 20,
-      },
-      {
-        'id': 'goal_004',
-        'title': 'Evening Run',
-        'pillar': 'Health & Fitness',
-        'motivationStyle': 'energetic',
-        'format': 'audio',
-        'hour': 18,
-        'minute': 0,
-        'startDaysAgo': 27,
-      },
-      {
-        'id': 'goal_005',
-        'title': 'Journaling',
-        'pillar': 'Personal Growth',
-        'motivationStyle': 'reflective',
-        'format': 'text',
-        'hour': 21,
-        'minute': 0,
-        'startDaysAgo': 15,
-      },
-      {
-        'id': 'goal_006',
-        'title': 'Cold Shower',
-        'pillar': 'Health & Fitness',
-        'motivationStyle': 'bold',
-        'format': 'text',
-        'hour': 7,
-        'minute': 0,
-        'startDaysAgo': 10,
-      },
-      {
-        'id': 'goal_007',
-        'title': 'Sales Follow-ups',
-        'pillar': 'Business & Money',
-        'motivationStyle': 'driven',
-        'format': 'text',
-        'hour': 10,
-        'minute': 0,
-        'startDaysAgo': 22,
-      },
-      {
-        'id': 'goal_008',
-        'title': 'Gratitude Practice',
-        'pillar': 'Personal Growth',
-        'motivationStyle': 'faith',
-        'format': 'text',
-        'hour': 6,
-        'minute': 30,
-        'startDaysAgo': 18,
-      },
-      {
-        'id': 'goal_009',
-        'title': 'Drink 3L Water',
-        'pillar': 'Health & Fitness',
-        'motivationStyle': 'calm',
-        'format': 'text',
-        'hour': 7,
-        'minute': 30,
-        'startDaysAgo': 29,
-      },
-      {
-        'id': 'goal_010',
-        'title': 'Budget Check',
-        'pillar': 'Business & Money',
-        'motivationStyle': 'analytical',
-        'format': 'text',
-        'hour': 20,
-        'minute': 0,
-        'startDaysAgo': 12,
-      },
-      {
-        'id': 'goal_011',
-        'title': 'Stretching Routine',
-        'pillar': 'Health & Fitness',
-        'motivationStyle': 'calm',
-        'format': 'audio',
-        'hour': 7,
-        'minute': 0,
-        'startDaysAgo': 8,
-      },
-      {
-        'id': 'goal_012',
-        'title': 'Learn New Skill',
-        'pillar': 'Personal Growth',
-        'motivationStyle': 'motivational',
-        'format': 'text',
-        'hour': 19,
-        'minute': 0,
-        'startDaysAgo': 14,
-      },
-      {
-        'id': 'goal_013',
-        'title': 'Prayer & Devotion',
-        'pillar': 'Faith',
-        'motivationStyle': 'faith',
-        'format': 'text',
-        'hour': 5,
-        'minute': 30,
-        'startDaysAgo': 29,
-      },
-      {
-        'id': 'goal_014',
-        'title': 'Network Outreach',
-        'pillar': 'Business & Money',
-        'motivationStyle': 'driven',
-        'format': 'text',
-        'hour': 11,
-        'minute': 0,
-        'startDaysAgo': 7,
-      },
-      {
-        'id': 'goal_015',
-        'title': 'Healthy Breakfast',
-        'pillar': 'Health & Fitness',
-        'motivationStyle': 'calm',
-        'format': 'text',
-        'hour': 7,
-        'minute': 0,
-        'startDaysAgo': 29,
-      },
-      {
-        'id': 'goal_016',
-        'title': 'Weekly Planning',
-        'pillar': 'Personal Growth',
-        'motivationStyle': 'analytical',
-        'format': 'text',
-        'hour': 17,
-        'minute': 0,
-        'startDaysAgo': 21,
-      },
-      {
-        'id': 'goal_017',
-        'title': 'Podcast Learning',
-        'pillar': 'Personal Growth',
-        'motivationStyle': 'motivational',
-        'format': 'audio',
-        'hour': 12,
-        'minute': 0,
-        'startDaysAgo': 5,
-      },
-      {
-        'id': 'goal_018',
-        'title': 'Evening Walk',
-        'pillar': 'Health & Fitness',
-        'motivationStyle': 'calm',
-        'format': 'text',
-        'hour': 19,
-        'minute': 30,
-        'startDaysAgo': 16,
-      },
-      {
-        'id': 'goal_019',
-        'title': 'Savings Transfer',
-        'pillar': 'Business & Money',
-        'motivationStyle': 'driven',
-        'format': 'text',
-        'hour': 9,
-        'minute': 0,
-        'startDaysAgo': 3,
-      },
-      {
-        'id': 'goal_020',
-        'title': 'Digital Detox Hour',
-        'pillar': 'Personal Growth',
-        'motivationStyle': 'reflective',
-        'format': 'text',
-        'hour': 21,
-        'minute': 30,
-        'startDaysAgo': 11,
-      },
+      _goal('goal_001', 'Morning Meditation', 'Health & Fitness', 6, 0, 29),
+      _goal('goal_002', 'Read 10 Pages', 'Personal Growth', 8, 30, 25),
+      _goal('goal_003', 'Revenue Review', 'Business & Money', 9, 0, 20),
+      _goal('goal_004', 'Evening Run', 'Health & Fitness', 18, 0, 27),
+      _goal('goal_005', 'Journaling', 'Personal Growth', 21, 0, 15),
+      _goal('goal_006', 'Cold Shower', 'Health & Fitness', 7, 0, 10),
+      _goal('goal_007', 'Sales Follow-ups', 'Business & Money', 10, 0, 22),
+      _goal('goal_008', 'Gratitude Practice', 'Personal Growth', 6, 30, 18),
+      _goal('goal_009', 'Drink 3L Water', 'Health & Fitness', 7, 30, 29),
+      _goal('goal_010', 'Budget Check', 'Business & Money', 20, 0, 12),
+      _goal('goal_011', 'Stretching Routine', 'Health & Fitness', 7, 0, 8),
+      _goal('goal_012', 'Learn New Skill', 'Personal Growth', 19, 0, 14),
+      _goal('goal_013', 'Prayer & Devotion', 'Faith', 5, 30, 29),
+      _goal('goal_014', 'Network Outreach', 'Business & Money', 11, 0, 7),
+      _goal('goal_015', 'Healthy Breakfast', 'Health & Fitness', 7, 0, 29),
+      _goal('goal_016', 'Weekly Planning', 'Personal Growth', 17, 0, 21),
+      _goal('goal_017', 'Podcast Learning', 'Personal Growth', 12, 0, 5),
+      _goal('goal_018', 'Evening Walk', 'Health & Fitness', 19, 30, 16),
+      _goal('goal_019', 'Savings Transfer', 'Business & Money', 9, 0, 3),
+      _goal('goal_020', 'Digital Detox Hour', 'Personal Growth', 21, 30, 11),
     ];
 
     int count = 0;
@@ -224,15 +45,12 @@ class SeedService {
     for (final goal in fakeGoals) {
       final startDaysAgo = goal['startDaysAgo'] as int;
 
-      // ✅ Only generate from goal's start date up to TODAY (never future)
-      for (int daysAgo = startDaysAgo; daysAgo >= 0; daysAgo--) {
+      // Seed historical days (exclude today)
+      for (int daysAgo = startDaysAgo; daysAgo > 0; daysAgo--) {
         final day = now.subtract(Duration(days: daysAgo));
         final dateKey = OccurrenceService.toDateKey(day);
 
-        // ✅ Hard guard — never create future occurrences
-        if (dateKey.compareTo(today) > 0) continue;
-
-        final status = _fakeStatus(daysAgo, goal['id'] as String);
+        final status = _generateStatus(daysAgo, goal['id'] as String);
 
         final occurrence = GoalOccurrence(
           goalId: goal['id'] as String,
@@ -252,63 +70,82 @@ class SeedService {
                   day.month,
                   day.day,
                   (goal['hour'] as int) + 1,
-                  0,
                 )
               : null,
           pillar: goal['pillar'] as String,
-          motivationStyle: goal['motivationStyle'] as String,
-          format: goal['format'] as String,
+          motivationStyle: 'motivational',
+          format: 'text',
         );
 
         await box.add(occurrence);
         count++;
       }
+
+      // ✅ Explicitly add TODAY occurrence (always pending)
+      final todayOccurrence = GoalOccurrence(
+        goalId: goal['id'] as String,
+        goalTitle: goal['title'] as String,
+        dateKey: todayKey,
+        scheduledAt: DateTime(
+          now.year,
+          now.month,
+          now.day,
+          goal['hour'] as int,
+          goal['minute'] as int,
+        ),
+        status: GoalOccurrenceStatus.pending,
+        checkedInAt: null,
+        pillar: goal['pillar'] as String,
+        motivationStyle: 'motivational',
+        format: 'text',
+      );
+
+      await box.add(todayOccurrence);
+      count++;
     }
 
-    print('✅ Seeded $count fake occurrences for 20 goals');
+    print(
+        '✅ Seeded $count fake occurrences (~90% completion rate + today pending)');
   }
 
-  /// Realistic completion patterns per goal
-  static GoalOccurrenceStatus _fakeStatus(int daysAgo, String goalId) {
-    // Today always pending so you can test buttons
-    if (daysAgo == 0) return GoalOccurrenceStatus.pending;
-
-    // Each goal has its own completion rate
-    final rates = {
-      'goal_001': 0.90, // Morning Meditation — very consistent
-      'goal_002': 0.75, // Read 10 Pages
-      'goal_003': 0.50, // Revenue Review
-      'goal_004': 0.80, // Evening Run
-      'goal_005': 0.65, // Journaling
-      'goal_006': 0.55, // Cold Shower — hard habit
-      'goal_007': 0.60, // Sales Follow-ups
-      'goal_008': 0.85, // Gratitude Practice
-      'goal_009': 0.70, // Drink 3L Water
-      'goal_010': 0.45, // Budget Check
-      'goal_011': 0.60, // Stretching
-      'goal_012': 0.50, // Learn New Skill
-      'goal_013': 0.95, // Prayer — very consistent
-      'goal_014': 0.40, // Network Outreach — tough
-      'goal_015': 0.80, // Healthy Breakfast
-      'goal_016': 0.55, // Weekly Planning
-      'goal_017': 0.70, // Podcast Learning
-      'goal_018': 0.65, // Evening Walk
-      'goal_019': 0.85, // Savings Transfer
-      'goal_020': 0.35, // Digital Detox — hardest
+  static Map<String, dynamic> _goal(
+    String id,
+    String title,
+    String pillar,
+    int hour,
+    int minute,
+    int startDaysAgo,
+  ) {
+    return {
+      'id': id,
+      'title': title,
+      'pillar': pillar,
+      'hour': hour,
+      'minute': minute,
+      'startDaysAgo': startDaysAgo,
     };
-
-    final rate = rates[goalId] ?? 0.65;
-    final seed = (daysAgo * goalId.hashCode).abs() % 100;
-    final threshold = (rate * 100).round();
-
-    if (seed < threshold) return GoalOccurrenceStatus.completed;
-    if (seed < threshold + 8) return GoalOccurrenceStatus.skipped;
-    return GoalOccurrenceStatus.pending; // missed
   }
 
-  /// Wipe everything and re-seed fresh
+  static GoalOccurrenceStatus _generateStatus(int daysAgo, String goalId) {
+    const double completionRate = 0.90;
+    const double skipRate = 0.05;
+
+    final seed = (daysAgo * goalId.hashCode).abs() % 100;
+
+    final completionThreshold = (completionRate * 100).round();
+    final skipThreshold = completionThreshold + (skipRate * 100).round();
+
+    if (seed < completionThreshold) {
+      return GoalOccurrenceStatus.completed;
+    } else if (seed < skipThreshold) {
+      return GoalOccurrenceStatus.skipped;
+    } else {
+      return GoalOccurrenceStatus.pending;
+    }
+  }
+
   static Future<void> resetAndReseed() async {
-    final box = Hive.box<GoalOccurrence>('goal_occurrences');
+    final box = Hive.box<GoalOccurrence>(HiveStorage.goalOccurrenceBox);
     await box.clear();
     print('🗑️ Cleared all occurrences');
     await seedFakeOccurrences();

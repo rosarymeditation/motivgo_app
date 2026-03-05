@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rosary/enums/pillar_type.dart';
-import 'package:rosary/route/route_helpers.dart';
+import 'package:motivgo/enums/pillar_type.dart';
+import 'package:motivgo/route/route_helpers.dart';
 
 import '../../controllers/goal_controller.dart';
 import '../../controllers/pillar_controller.dart';
@@ -32,7 +32,7 @@ class _FirstGoalPageState extends State<FirstGoalPage> {
   RepeatOption repeatOption = RepeatOption.none;
   final Set<int> selectedWeekdays = {}; // 1 = Monday ... 7 = Sunday
   int? monthlyDay;
-MotivationStyle motivationStyle = MotivationStyle.gentle;
+  MotivationStyle motivationStyle = MotivationStyle.gentle;
 
   //String motivationStyle = "Firm & Encouraging";
   String format = "Audio";
@@ -168,14 +168,11 @@ MotivationStyle motivationStyle = MotivationStyle.gentle;
 
             const SizedBox(height: 16),
 
-            if (repeatOption == RepeatOption.weekly)
-              _buildWeekdaySelector(),
+            if (repeatOption == RepeatOption.weekly) _buildWeekdaySelector(),
 
-            if (repeatOption == RepeatOption.monthly)
-              _buildMonthlySelector(),
+            if (repeatOption == RepeatOption.monthly) _buildMonthlySelector(),
 
-            if (repeatOption == RepeatOption.none)
-              _buildOneTimeDate(),
+            if (repeatOption == RepeatOption.none) _buildOneTimeDate(),
 
             const SizedBox(height: 20),
 
@@ -274,9 +271,7 @@ MotivationStyle motivationStyle = MotivationStyle.gentle;
                   days[index],
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: selected
-                        ? Colors.white
-                        : const Color(0xFF2B2E5A),
+                    color: selected ? Colors.white : const Color(0xFF2B2E5A),
                   ),
                 ),
               ),
@@ -294,9 +289,7 @@ MotivationStyle motivationStyle = MotivationStyle.gentle;
         const MotivGoLabel("Day of Month"),
         const SizedBox(height: 8),
         _SelectField(
-          value: monthlyDay == null
-              ? "Select day (1-31)"
-              : "Day $monthlyDay",
+          value: monthlyDay == null ? "Select day (1-31)" : "Day $monthlyDay",
           onTap: () async {
             final picked = await showDialog<int>(
               context: context,
@@ -331,7 +324,7 @@ MotivationStyle motivationStyle = MotivationStyle.gentle;
   // SAVE GOAL (UNBROKEN LOGIC)
   // ============================================================
 
-void _saveGoal() async {
+  void _saveGoal() async {
     final goalText = goalCtrl.text.trim();
 
     if (goalText.isEmpty) {
@@ -437,7 +430,7 @@ void _saveGoal() async {
     });
   }
 
- Widget _buildMotivationDropdown() {
+  Widget _buildMotivationDropdown() {
     return _SelectDropdown<MotivationStyle>(
       value: motivationStyle,
       items: MotivationStyle.values,
@@ -478,20 +471,19 @@ class _DayPickerDialog extends StatelessWidget {
   }
 }
 
-  // ---------------------------
-  // All helper methods below (unchanged)
-  // ---------------------------
-  // Future<void> _pickDate() async {
-  //   final now = DateTime.now();
-  //   final picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: selectedDate ?? now,
-  //     firstDate: now,
-  //     lastDate: DateTime(now.year + 5),
-  //   );
-  //   if (picked != null) setState(() => selectedDate = picked);
-  // }
-
+// ---------------------------
+// All helper methods below (unchanged)
+// ---------------------------
+// Future<void> _pickDate() async {
+//   final now = DateTime.now();
+//   final picked = await showDatePicker(
+//     context: context,
+//     initialDate: selectedDate ?? now,
+//     firstDate: now,
+//     lastDate: DateTime(now.year + 5),
+//   );
+//   if (picked != null) setState(() => selectedDate = picked);
+// }
 
 // ==========================
 // Widgets used in page

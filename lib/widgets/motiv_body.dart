@@ -1,7 +1,5 @@
-
-
 import 'package:flutter/material.dart';
-import 'package:rosary/utils/motivGoTheme.dart';
+import 'package:motivgo/utils/motivGoTheme.dart';
 
 class MotivGoBody extends StatelessWidget {
   final String text;

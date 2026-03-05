@@ -20,7 +20,7 @@ class InsightPage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 430),
+             // constraints: const BoxConstraints(maxWidth: 430),
               decoration: BoxDecoration(
                 color: bg,
                 borderRadius: BorderRadius.circular(30),

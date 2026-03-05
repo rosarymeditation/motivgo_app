@@ -1,11 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rosary/controllers/goal_controller.dart';
-import 'package:rosary/widgets/goal_card_widget.dart';
+import 'package:motivgo/controllers/goal_controller.dart';
+import 'package:motivgo/widgets/goal_card_widget.dart';
 import '../model/goal_model.dart';
 import '../model/goal_occurrence_model.dart';
 import '../service/occurrence_service.dart';
+
 class GoalOccurrencePage extends StatelessWidget {
   const GoalOccurrencePage({super.key});
 
@@ -270,9 +270,8 @@ class _OccurrenceCard extends StatelessWidget {
                     Text(
                       isToday ? "Today" : _formatDate(occurrence.dateKey),
                       style: TextStyle(
-                        color: isToday
-                            ? const Color(0xFF7B82FF)
-                            : Colors.white24,
+                        color:
+                            isToday ? const Color(0xFF7B82FF) : Colors.white24,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),
@@ -326,8 +325,7 @@ class _OccurrenceCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   occurrence.pillar!,
-                  style:
-                      const TextStyle(color: Colors.white38, fontSize: 12),
+                  style: const TextStyle(color: Colors.white38, fontSize: 12),
                 ),
               ],
             ],
@@ -406,13 +404,12 @@ class _OccurrenceCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.done_all,
-                    size: 13, color: Color(0xFF4CAF50)),
+                const Icon(Icons.done_all, size: 13, color: Color(0xFF4CAF50)),
                 const SizedBox(width: 4),
                 Text(
                   "Checked in at ${_formatTime(occurrence.checkedInAt!)}",
-                  style: const TextStyle(
-                      color: Color(0xFF4CAF50), fontSize: 12),
+                  style:
+                      const TextStyle(color: Color(0xFF4CAF50), fontSize: 12),
                 ),
               ],
             ),
@@ -435,8 +432,18 @@ class _OccurrenceCard extends StatelessWidget {
       final dt = DateTime(
           int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
       const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
       ];
       return '${months[dt.month - 1]} ${dt.day}';
     } catch (_) {

@@ -5,9 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:motivgo/controllers/suggestion_controller.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:rosary/controllers/pillar_controller.dart';
-import 'package:rosary/model/goal_model.dart';
+import 'package:motivgo/controllers/insight_controller.dart';
+import 'package:motivgo/controllers/pillar_controller.dart';
+import 'package:motivgo/controllers/subscription_controller.dart';
+import 'package:motivgo/controllers/tab_controller.dart';
+import 'package:motivgo/model/goal_model.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'controllers/goal_controller.dart';
 import 'controllers/user_controller.dart';
@@ -15,7 +19,6 @@ import 'model/goal_occurrence_model.dart';
 import 'model/user_model.dart';
 import 'route/route_helpers.dart';
 import 'service/midnight_trigger.dart';
-import 'service/seed_service.dart';
 import 'themes/my_themes.dart';
 import 'utils/hive_storage.dart';
 import 'utils/messages.dart';
@@ -48,20 +51,32 @@ Future<void> main() async {
   if (!Hive.isBoxOpen(HiveStorage.goalBox)) {
     await Hive.openBox<GoalModel>(HiveStorage.goalBox);
   }
-  if (!Hive.isBoxOpen('goal_occurrences')) {
-    await Hive.openBox<GoalOccurrence>('goal_occurrences');
+  if (!Hive.isBoxOpen(HiveStorage.goalOccurrenceBox)) {
+    await Hive.openBox<GoalOccurrence>(HiveStorage.goalOccurrenceBox);
   }
-  await SeedService.resetAndReseed();
+  //await SeedService.resetAndReseed();
   // 4️⃣ Initialize Services & Dependencies (GetX, repos, etc.)
   Map<String, Map<String, String>> languages = await dep.init();
-
+  // 8️⃣ Configure RevenueCat
+  await Purchases.setDebugLogsEnabled(true);
+  await Purchases.configure(
+    PurchasesConfiguration(
+      Platform.isAndroid
+          ? "goog_XqSftzRLSxeriVFuBbJeoNhRtpO"
+          : "appl_dFnphFdrxsZoqaMHkZqzeRprbun",
+    ),
+  );
   // 5️⃣ Initialize Controllers
   Get.put(
     UserController(userRepo: Get.find()),
     permanent: true,
   );
   Get.put(GoalController(userRepo: Get.find()));
-   Get.put(PillarController());
+  Get.put(MainTabController());
+  Get.put(PillarController());
+  Get.put(InsightController());
+  Get.put(SubscriptionController());
+  Get.put(SuggestionController(suggestionRepo: Get.find()));
 
   // 6️⃣ Initialize Local Notifications (AlarmService)
   await Future.wait([AlarmService().init()]);
@@ -69,18 +84,11 @@ Future<void> main() async {
   // 7️⃣ Initialize Midnight Trigger — AFTER boxes, deps & controllers are ready
   await MidnightTrigger.init();
   await MidnightTrigger.schedule();
-  await MidnightTrigger
-      .catchUpMissedOccurrences(); // ✅ goals box is open and populated
+  await MidnightTrigger.catchUpMissedOccurrences();
+  // await MidnightTrigger
+  //     .catchUpMissedOccurrences(); // ✅ goals box is open and populated
 
-  // 8️⃣ Configure RevenueCat
-  await Purchases.setDebugLogsEnabled(true);
-  await Purchases.configure(
-    PurchasesConfiguration(
-      Platform.isAndroid
-          ? "goog_iFICCzMVnWMsuOBPBJbWwSsSLCa"
-          : "appl_GxGpvrKjpVrggJvMgzgyNIbbUvL",
-    ),
-  );
+
 
   // 9️⃣ Run the App
   runApp(MyApp(languages: languages));

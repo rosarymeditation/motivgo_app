@@ -1,5 +1,5 @@
-name: rosary
-description: A caholic reading app built by softnergy limited.
+name: motivgo
+description: Productivity App.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+62
+version: 1.0.0+5
 
 environment:
   sdk: ">=3.1.0-262.1.beta <4.0.0"
@@ -42,7 +42,6 @@ dependencies:
   pull_to_refresh: ^2.0.0
   cupertino_icons: ^1.0.5
   onesignal_flutter: ^5.3.0
-  file_picker: ^10.0.0
   open_file:
   firebase_auth: ^5.0.0
   json_annotation: ^4.3.0
@@ -52,26 +51,18 @@ dependencies:
   google_fonts: ^4.0.4
   package_info_plus: ^8.3.0
   fluttertoast: ^8.2.1
-  path: ^1.8.0
-  image_picker: ^1.1.2 # For picking images from gallery/camera
   permission_handler: ^11.4.0
-  camera: ^0.11.1
-  aron_gradient_line: ^1.1.2
   device_info_plus: ^12.3.0
   modal_bottom_sheet: ^3.0.0
   smooth_page_indicator: ^1.2.1
+  confetti: ^0.8.0
   ulid: ^2.0.1
-  drop_down_list: ^2.0.0
-  sign_in_with_apple: ^6.1.4
-  google_sign_in: ^5.0.0
   firebase_core: ^3.6.0
   app_settings: ^5.2.0
   purchases_flutter: ^9.1.0
-  confetti: ^0.8.0
   in_app_update: ^4.2.3
   # google_mlkit_face_detection: ^0.13.1
   shimmer: ^3.0.0
-  wolt_modal_sheet: ^0.11.0
   connectivity_plus: ^6.1.4
   internet_connection_checker: ^1.0.0+1
   flutter_html: ^3.0.0
@@ -83,7 +74,6 @@ dependencies:
   hive_flutter: ^1.1.0
   mongo_dart: ^0.10.8
   flutter_local_notifications: ^18.0.1
-  syncfusion_flutter_charts: ^31.1.19
   
 
 dependency_overrides:
@@ -93,8 +83,10 @@ dependency_overrides:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icon/logo.png"
+  image_path: "assets/icon/Logo.png"
   remove_alpha_ios: true
+  adaptive_icon_background: "#141A40"       # your navy color
+  adaptive_icon_foreground: "assets/icon/adaptive_logo.png"
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

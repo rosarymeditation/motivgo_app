@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:rosary/controllers/pillar_controller.dart';
+import 'package:motivgo/controllers/pillar_controller.dart';
 import '../data/repository/user_repo.dart';
 import '../enums/time_enum.dart';
 import '../model/DTO/goal_and_pillars.dart';
@@ -271,6 +271,4 @@ class GoalController extends GetxController {
 
     print('🗑️ Deleted all occurrences for goal: $goalId');
   }
-
- 
 }

@@ -112,8 +112,8 @@ class MidnightTrigger {
       now.year,
       now.month,
       now.day,
-      09, // hour
-      48, // minute
+      0, // hour → midnight
+      0, // minute
     );
 
     if (midnight.isBefore(now)) {

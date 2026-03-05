@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:rosary/utils/appColor.dart';
+import 'package:motivgo/utils/appColor.dart';
 
 class ThemeClass {
   static ThemeData lightTheme() {
@@ -12,13 +12,12 @@ class ThemeClass {
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-       
         titleTextStyle: const TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
-       iconTheme:  IconThemeData(color: AppColor.primaryColor),
+        iconTheme: IconThemeData(color: AppColor.primaryColor),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

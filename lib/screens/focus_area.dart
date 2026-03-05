@@ -38,7 +38,7 @@ class FocusAreasPage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 430),
+              //constraints: const BoxConstraints(maxWidth: 430),
               decoration: BoxDecoration(
                 color: card,
                 borderRadius: BorderRadius.circular(30),
@@ -201,10 +201,24 @@ class FocusAreasPage extends StatelessWidget {
                         pillarC.commitDesiredToSelected();
 
                         final isFree = pillarC.tier.value != "premium";
+                        if (pillarC.desired.isEmpty) {
+                          Get.snackbar(
+                            '⚠️ No Selection',
+                            'Please select at least one focus area to continue.',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: const Color(0xFF2B2E5A),
+                            colorText: Colors.white,
+                            borderRadius: 14,
+                            margin: const EdgeInsets.all(14),
+                            duration: const Duration(seconds: 2),
+                          );
+                          return; // stop further navigation
+                        }
+
                         if (isFree && pillarC.desired.length > 2) {
                           _showUpgradeModal(
                             onUpgrade: () {
-                              // Get.toNamed(RouteHelpers.paywallPage);
+                              Get.toNamed(RouteHelpers.paywall);
                             },
                             onContinueFree: () {
                               Get.back();

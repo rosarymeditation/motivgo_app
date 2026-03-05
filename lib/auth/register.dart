@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rosary/utils/hive_storage.dart';
+import 'package:motivgo/utils/hive_storage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/user_controller.dart';
 import '../route/route_helpers.dart';
@@ -35,6 +36,9 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
 
+  /// Privacy policy acceptance
+  bool _acceptedPrivacy = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -50,7 +54,21 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
 
+    // Validate all fields
     if (!_formKey.currentState!.validate()) return;
+
+    // Check privacy policy
+    if (!_acceptedPrivacy) {
+      Get.snackbar(
+        "Consent Required",
+        "You must accept the privacy policy to create an account.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade50,
+        colorText: Colors.red.shade800,
+        margin: const EdgeInsets.all(12),
+      );
+      return;
+    }
 
     final response = await _userController.register(
       _emailController.text.trim(),
@@ -101,7 +119,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         child: Container(
-                          constraints: const BoxConstraints(maxWidth: 430),
                           decoration: BoxDecoration(
                             color: card,
                             borderRadius: BorderRadius.circular(30),
@@ -148,7 +165,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                     icon: Icons.person,
                                     fill: fieldFill,
                                     border: line,
-                                    validator: AppValidators.validateFirstName,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return "First name is required";
+                                      }
+                                      return AppValidators.validateFirstName(
+                                          value);
+                                    },
                                     textInputAction: TextInputAction.next,
                                     onFieldSubmitted: (_) =>
                                         _emailFocus.requestFocus(),
@@ -165,7 +189,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                     icon: Icons.mail_outline_rounded,
                                     fill: fieldFill,
                                     border: line,
-                                    validator: AppValidators.validateEmail,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return "Email is required";
+                                      }
+                                      return AppValidators.validateEmail(value);
+                                    },
                                     focusNode: _emailFocus,
                                     keyboardType: TextInputType.emailAddress,
                                     textInputAction: TextInputAction.next,
@@ -198,7 +228,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                         color: const Color(0xFF9AA0C6),
                                       ),
                                     ),
-                                    validator: AppValidators.validatePassword,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return "Password is required";
+                                      }
+                                      return AppValidators.validatePassword(
+                                          value);
+                                    },
                                     onFieldSubmitted: (_) =>
                                         _confirmFocus.requestFocus(),
                                   ),
@@ -228,23 +265,75 @@ class _RegisterPageState extends State<RegisterPage> {
                                         color: const Color(0xFF9AA0C6),
                                       ),
                                     ),
-                                    validator: (value) =>
-                                        AppValidators.validateConfirmPassword(
-                                      value,
-                                      _passwordController.text,
-                                    ),
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return "Please confirm password";
+                                      }
+                                      return AppValidators
+                                          .validateConfirmPassword(
+                                              value, _passwordController.text);
+                                    },
                                     onFieldSubmitted: (_) => _submit(),
                                   ),
 
-                                  const SizedBox(height: 26),
+                                  const SizedBox(height: 16),
 
-                                  /// SUBMIT
+                                  /// PRIVACY POLICY CHECK
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        value: _acceptedPrivacy,
+                                        onChanged: (value) => setState(() {
+                                          _acceptedPrivacy = value ?? false;
+                                        }),
+                                      ),
+                                      Expanded(
+                                        child: Wrap(
+                                          children: [
+                                            const Text("I accept the "),
+                                            GestureDetector(
+                                              onTap: () {
+                                                launchUrl(
+                                                  Uri.parse(
+                                                      "https://motivgo.com/privacy.html"),
+                                                );
+                                                // TODO: open privacy policy page
+                                              },
+                                              child: const Text(
+                                                "Privacy Policy",
+                                                style: TextStyle(
+                                                    color: Colors.blue,
+                                                    decoration: TextDecoration
+                                                        .underline),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (!_acceptedPrivacy)
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Text(
+                                        "You must accept the privacy policy",
+                                        style: TextStyle(
+                                            color: Colors.red.shade700,
+                                            fontSize: 12),
+                                      ),
+                                    ),
+
+                                  const SizedBox(height: 16),
+
+                                  /// SUBMIT BUTTON
                                   Obx(() => MotivGoPrimaryButton(
                                         text: _userController.isLoading.value
                                             ? "Creating Account..."
                                             : "Sign Up",
                                         onPressed:
-                                            _userController.isLoading.value
+                                            (_userController.isLoading.value ||
+                                                    !_acceptedPrivacy)
                                                 ? null
                                                 : _submit,
                                       )),

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:rosary/utils/motivGoTheme.dart';
+import 'package:motivgo/utils/motivGoTheme.dart';
 
 class MotivGoLink extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
   final Color color;
 
-  const MotivGoLink({
-    super.key,
-    required this.text,
-    required this.onTap,
-    this.color = MotivGoTextTheme.textDark
-  });
+  const MotivGoLink(
+      {super.key,
+      required this.text,
+      required this.onTap,
+      this.color = MotivGoTextTheme.textDark});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +18,10 @@ class MotivGoLink extends StatelessWidget {
       onTap: onTap,
       child: Text(
         text,
-        style:  TextStyle(
+        style: TextStyle(
           fontSize: 12.5,
           fontWeight: FontWeight.w800,
-          color:color,
+          color: color,
         ),
       ),
     );

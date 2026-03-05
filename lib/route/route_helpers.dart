@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:rosary/auth/register.dart';
-import 'package:rosary/screens/dashboard.dart';
-import 'package:rosary/screens/goal/first_goal.dart';
-import 'package:rosary/screens/focus_area.dart';
-import 'package:rosary/screens/goal/edit.dart';
+import 'package:motivgo/auth/register.dart';
+import 'package:motivgo/screens/dashboard.dart';
+import 'package:motivgo/screens/goal/first_goal.dart';
+import 'package:motivgo/screens/focus_area.dart';
+import 'package:motivgo/screens/goal/edit.dart';
 
-import 'package:rosary/screens/landing.dart';
-import 'package:rosary/screens/main_tab.dart';
-import 'package:rosary/screens/new_goal.dart';
-import 'package:rosary/screens/occurrence.dart';
-import 'package:rosary/splash/splash_page.dart';
+import 'package:motivgo/screens/landing.dart';
+import 'package:motivgo/screens/main_tab.dart';
+import 'package:motivgo/screens/new_goal.dart';
+import 'package:motivgo/screens/occurrence.dart';
+import 'package:motivgo/screens/payment/paywall.dart';
+import 'package:motivgo/screens/suggestion.dart';
+import 'package:motivgo/splash/splash_page.dart';
 
 import '../auth/login.dart';
 
@@ -20,8 +22,10 @@ class RouteHelpers {
   static const String registerPage = "/register-page";
   static const String loginPage = "/login-page";
   static const String bottomNav = "/bottom-nav-page";
+  static const String paywall = "/paywall-page";
   static const String firstGoalPage = "/first-goal-page";
   static const String editGoalPage = "/edit-goal-page";
+  static const String suggestionPage = "/suggestion-page";
   static const String newGoalPage = "/new-goal-page";
   static const String goalOccurrencePage = "/goal-occurrence-page";
   static const String focusAreaPage = "/focus-area-page";
@@ -37,6 +41,7 @@ class RouteHelpers {
     //GetPage(name: wayOfCross, page: () => StationPage()),
     // GetPage(name: emailPage, page: () => ReportScreen()),
     GetPage(name: editGoalPage, page: () => EditGoalPage()),
+    GetPage(name: paywall, page: () => PaywallPage()),
     GetPage(name: newGoalPage, page: () => NewGoalPage()),
     GetPage(name: goalOccurrencePage, page: () => GoalOccurrencePage()),
     GetPage(name: firstGoalPage, page: () => FirstGoalPage()),
@@ -44,7 +49,7 @@ class RouteHelpers {
     GetPage(name: focusAreaPage, page: () => FocusAreasPage()),
     GetPage(name: landingPage, page: () => LandingPage()),
     GetPage(name: loginPage, page: () => LoginPage()),
-
+    GetPage(name: suggestionPage, page: () => SuggestionPage()),
     GetPage(name: registerPage, page: () => RegisterPage()),
   ];
 }

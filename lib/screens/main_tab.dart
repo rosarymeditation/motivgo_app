@@ -1,89 +1,55 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rosary/controllers/user_controller.dart';
-import 'package:rosary/screens/dashboard.dart';
-import 'package:rosary/screens/goal/goals.dart';
-import 'package:rosary/screens/insight.dart';
-import 'package:rosary/screens/profile.dart';
+import 'package:motivgo/screens/dashboard.dart';
+import 'package:motivgo/screens/goal/goals.dart';
+import 'package:motivgo/screens/insight.dart';
+import 'package:motivgo/screens/profile.dart';
 
-class MainTab extends StatefulWidget {
-  MainTab({super.key});
+import '../controllers/tab_controller.dart';
 
-  @override
-  State<MainTab> createState() => _MainTabState();
-}
+class MainTab extends StatelessWidget {
+  MainTab({Key? key}) : super(key: key);
 
-class _MainTabState extends State<MainTab> {
+  final MainTabController tabController = Get.find();
+
   final List<Widget> _pages = [
     DashboardPage(),
     GoalsPage(),
     InsightPage(),
-    ProfilePage()
-    //FeedListScreen(),
+    ProfilePage(),
   ];
-
-  final _userController = Get.find<UserController>();
-
-  int _selectedTab = 0;
-
-  void _handleIndexChanged(int index) {
-    setState(() {
-      _selectedTab = index;
-    });
-  }
-
-  @override
-  void initState() {
-    Future.delayed(Duration(seconds: 1), () {
-      // _userController.getTimeline();
-    });
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedTab],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedTab,
-        onTap: _handleIndexChanged,
-        backgroundColor: Colors.black.withOpacity(0.6),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.orange.shade800,
-        unselectedItemColor: Colors.white70,
-        items: [
-          /// Home
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            activeIcon: Icon(Icons.home),
-            label: "Today",
+    return Obx(() => Scaffold(
+          body: _pages[tabController.selectedIndex.value],
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: tabController.selectedIndex.value,
+            onTap: tabController.changeTab,
+            backgroundColor: Colors.black.withOpacity(0.6),
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: Colors.orange.shade800,
+            unselectedItemColor: Colors.white70,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: "Today",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.track_changes_outlined),
+                label: "Goals",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.analytics_outlined),
+                activeIcon: Icon(Icons.analytics),
+                label: "Insight",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_3_rounded),
+                label: "Profile",
+              ),
+            ],
           ),
-
-          /// Match
-          BottomNavigationBarItem(
-            icon: Icon(Icons.track_changes_outlined),
-            activeIcon: Icon(Icons.track_changes_outlined),
-            label: "Goals",
-          ),
-
-          /// Chat (with badge)
-          BottomNavigationBarItem(
-            icon: Icon(Icons.analytics_outlined),
-            activeIcon: Icon(Icons.analytics),
-            label: "Insight",
-          ),
-
-           /// Chat (with badge)
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_3_rounded),
-            activeIcon: Icon(Icons.person_3_rounded),
-            label: "Profile",
-          ),
-        ],
-      ),
-    );
+        ));
   }
 }

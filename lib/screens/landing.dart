@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rosary/route/route_helpers.dart';
-import 'package:rosary/utils/motivGoTheme.dart';
+import 'package:motivgo/route/route_helpers.dart';
+import 'package:motivgo/utils/motivGoTheme.dart';
 
 import '../widgets/landing_headline.dart';
 import '../widgets/landing_subtitle.dart';
@@ -93,7 +93,10 @@ class LandingPage extends StatelessWidget {
                         ),
 
                         const SizedBox(height: 18),
-                        MotivGoPrimaryButton(text: "Get Started", onPressed:()=> Get.toNamed(RouteHelpers.registerPage)),
+                        MotivGoPrimaryButton(
+                            text: "Get Started",
+                            onPressed: () =>
+                                Get.toNamed(RouteHelpers.registerPage)),
                         // Get Started button (kept same)
                         // SizedBox(
                         //   width: double.infinity,

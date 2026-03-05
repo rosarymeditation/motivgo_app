@@ -52,16 +52,16 @@ class MyDownloader {
       "sorrowful_audio_url".tr,
 
       // Add audio paths from otherSongsPlaylist
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/amazing-grace.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/On+Eagle's+Wings.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/Here+I+Am%2C+Lord.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/Gregorian+Chants.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/Ave_Maria.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/n_imaculate%20mary.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/n_kneel_before_you.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/n_pange%20ligua.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/n_tatum%20ergo.mp3",
-      "https://foodengo2.s3.eu-west-2.amazonaws.com/rosary/songs/n_kyrie_eleison.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/amazing-grace.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/On+Eagle's+Wings.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/Here+I+Am%2C+Lord.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/Gregorian+Chants.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/Ave_Maria.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/n_imaculate%20mary.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/n_kneel_before_you.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/n_pange%20ligua.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/n_tatum%20ergo.mp3",
+      "https://foodengo2.s3.eu-west-2.amazonaws.com/motivgo/songs/n_kyrie_eleison.mp3",
     ]) {
       final fileName = url.split('/').last; // Extract file name from URL
       final fileExists = await checkIfFileExists(fileName);

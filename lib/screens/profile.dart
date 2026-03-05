@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rosary/route/route_helpers.dart';
+import 'package:motivgo/route/route_helpers.dart';
 
 import '../controllers/goal_controller.dart';
 import '../controllers/pillar_controller.dart';
@@ -28,7 +28,7 @@ class ProfilePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14),
             child: SingleChildScrollView(
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 430),
+                //constraints: const BoxConstraints(maxWidth: 430),
                 decoration: BoxDecoration(
                   color: bg,
                   borderRadius: BorderRadius.circular(30),
@@ -42,7 +42,7 @@ class ProfilePage extends StatelessWidget {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Stack(
-                 // fit: StackFit.expand,
+                  // fit: StackFit.expand,
                   children: [
                     // Background
                     Opacity(
@@ -52,7 +52,7 @@ class ProfilePage extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-              
+
                     // Top overlay
                     Container(
                       decoration: const BoxDecoration(
@@ -67,7 +67,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-              
+
                     // Bottom overlay
                     Container(
                       decoration: const BoxDecoration(
@@ -82,7 +82,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-              
+
                     Padding(
                       padding: const EdgeInsets.fromLTRB(18, 12, 18, 14),
                       child: Obx(() {
@@ -94,11 +94,11 @@ class ProfilePage extends StatelessWidget {
                         final pillars = (user?.focusPillars ?? [])
                             .map((s) => pillarFromApi(s))
                             .toList();
-              
+
                         return Column(
                           children: [
                             const SizedBox(height: 8),
-              
+
                             // ── Avatar ──
                             Container(
                               width: 86,
@@ -117,24 +117,11 @@ class ProfilePage extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  "assets/images/avatar.png",
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Container(
-                                    color: Colors.white.withOpacity(0.18),
-                                    child: Icon(
-                                      Icons.person_rounded,
-                                      size: 42,
-                                      color: Colors.white.withOpacity(0.85),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              child: ClipOval(child: Icon(Icons.person)),
                             ),
-              
+
                             const SizedBox(height: 12),
-              
+
                             // ── Name ──
                             Text(
                               user?.firstName ?? user?.email ?? 'User',
@@ -145,9 +132,9 @@ class ProfilePage extends StatelessWidget {
                                 letterSpacing: 0.2,
                               ),
                             ),
-              
+
                             const SizedBox(height: 8),
-              
+
                             // ── Tier badge ──
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -159,8 +146,10 @@ class ProfilePage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(18),
                                 border: Border.all(
                                   color: isPremium
-                                      ? const Color(0xFF7A3DFF).withOpacity(0.55)
-                                      : const Color(0xFFFF8A3D).withOpacity(0.55),
+                                      ? const Color(0xFF7A3DFF)
+                                          .withOpacity(0.55)
+                                      : const Color(0xFFFF8A3D)
+                                          .withOpacity(0.55),
                                   width: 1,
                                 ),
                               ),
@@ -188,9 +177,9 @@ class ProfilePage extends StatelessWidget {
                                 ],
                               ),
                             ),
-              
+
                             const SizedBox(height: 16),
-              
+
                             // ── Stats row ──
                             Row(
                               children: [
@@ -222,17 +211,16 @@ class ProfilePage extends StatelessWidget {
                                 ),
                               ],
                             ),
-              
+
                             const SizedBox(height: 14),
-              
+
                             // ── Scrollable sections ──
                             _GlassSection(
                               title: "Focus Pillars",
                               trailing: _SmallPillButton(
                                 text: "Edit",
                                 onTap: () {
-                                  _pillarController
-                                      .setSelectedPillars(pillars);
+                                  _pillarController.setSelectedPillars(pillars);
                                   Get.toNamed(RouteHelpers.focusAreaPage);
                                 },
                               ),
@@ -243,20 +231,19 @@ class ProfilePage extends StatelessWidget {
                                       children: pillars
                                           .map((pillar) => Padding(
                                                 padding: EdgeInsets.only(
-                                                  bottom:
-                                                      pillar != pillars.last
-                                                          ? 10
-                                                          : 0,
+                                                  bottom: pillar != pillars.last
+                                                      ? 10
+                                                      : 0,
                                                 ),
-                                                child: _PillarRow(
-                                                    pillar: pillar),
+                                                child:
+                                                    _PillarRow(pillar: pillar),
                                               ))
                                           .toList(),
                                     ),
                             ),
-                                      
+
                             const SizedBox(height: 14),
-                                      
+
                             // Account Info
                             _GlassSection(
                               title: "Account",
@@ -268,7 +255,7 @@ class ProfilePage extends StatelessWidget {
                                     text: user?.email ?? '—',
                                   ),
                                   const SizedBox(height: 10),
-                                      
+
                                   // Goals count
                                   _AccountRow(
                                     icon: Icons.flag_outlined,
@@ -276,7 +263,14 @@ class ProfilePage extends StatelessWidget {
                                         '$activeGoals active goal${activeGoals != 1 ? 's' : ''}',
                                   ),
                                   const SizedBox(height: 10),
-                                      
+                                  _AccountRow(
+                                    icon: Icons.lightbulb_outline_rounded,
+                                    text: "Send Feedback / Suggestion",
+                                    onTap: () {
+                                      Get.toNamed(RouteHelpers.suggestionPage);
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
                                   // Logout
                                   _AccountRow(
                                     icon: Icons.logout_rounded,
@@ -284,18 +278,16 @@ class ProfilePage extends StatelessWidget {
                                     isDanger: true,
                                     onTap: () async {
                                       await HiveStorage.resetAll();
-                                      await _userController
-                                          .clearSharedData();
-                                      Get.offAllNamed(
-                                          RouteHelpers.landingPage);
+                                      await _userController.clearSharedData();
+                                      Get.offAllNamed(RouteHelpers.landingPage);
                                     },
                                   ),
                                 ],
                               ),
                             ),
-                                      
+
                             const SizedBox(height: 16),
-                                      
+
                             // ── Upgrade button (hidden for premium) ──
                             if (!isPremium)
                               SizedBox(
@@ -323,6 +315,7 @@ class ProfilePage extends StatelessWidget {
                                   ),
                                   child: ElevatedButton(
                                     onPressed: () {
+                                      Get.toNamed(RouteHelpers.paywall);
                                       // TODO: go premium
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -330,8 +323,7 @@ class ProfilePage extends StatelessWidget {
                                       backgroundColor: Colors.transparent,
                                       shadowColor: Colors.transparent,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(28),
+                                        borderRadius: BorderRadius.circular(28),
                                       ),
                                     ),
                                     child: const Text(
@@ -345,9 +337,22 @@ class ProfilePage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                                      
+
                             const SizedBox(height: 16),
-                                      
+                            GestureDetector(
+                              onTap: () async {
+                                await HiveStorage.resetAll();
+                                await _userController.setHasDeleted(true);
+                                //await _userController.clearSharedData();
+                                Get.offAllNamed(RouteHelpers.landingPage);
+                              },
+                              child: Text(
+                                "Delete App",
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.red.shade300),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
                             // App version
                             Center(
                               child: Text(
@@ -359,7 +364,7 @@ class ProfilePage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                                      
+
                             const SizedBox(height: 10),
                           ],
                         );

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/repository/user_repo.dart';
 import '../model/goal_model.dart';
 import '../model/response_model.dart';
@@ -11,9 +12,27 @@ class UserController extends GetxController {
   UserController({required this.userRepo});
   var user = Rxn<UserModel>();
   var goal = Rxn<GoalModel>();
+  var hasDeleted = false.obs;
 
   var goals = RxList<GoalModel>([]);
- 
+  Future<void> _loadHasDeleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    hasDeleted.value = prefs.getBool('hasDeleted') ?? false;
+  }
+
+  // Set value and save to SharedPreferences
+  Future<void> setHasDeleted(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    hasDeleted.value = value;
+    await prefs.setBool('hasDeleted', value);
+  }
+
+  // Optional: get value from SharedPreferences directly
+  Future<bool> getHasDeleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('hasDeleted') ?? false;
+  }
+
   void loadGoals() {
     final storage = HiveStorage();
     goals.value = storage.getAllGoals();
@@ -23,17 +42,15 @@ class UserController extends GetxController {
     print("Users---------------------------------------------------");
   }
 
-  
-
   late Box<UserModel> _userBox;
   @override
   void onInit() {
     super.onInit();
     _userBox = Hive.box<UserModel>(HiveStorage.userBox);
-
+    _loadHasDeleted();
     // Load user from Hive
     loadUser();
-   // loadGoalOccurences();
+    // loadGoalOccurences();
   }
 
   void loadUser() {
@@ -62,6 +79,58 @@ class UserController extends GetxController {
       );
 
       Response response = await userRepo.register(model);
+
+      if (response.statusCode != 200) {
+        return ResponseModel(
+          false,
+          response.body["message"] ?? "Unknown error",
+        );
+      }
+
+      final token = response.body["token"]?.toString();
+      final userJson = response.body["user"];
+
+      if (token == null || token.isEmpty || userJson == null) {
+        return ResponseModel(
+            false, "Token or user missing from server response");
+      }
+      print(response.body);
+      final storage = HiveStorage();
+
+      // Save token
+      await storage.saveToken(token);
+      userRepo.saveUserToken(token);
+
+      // Save user
+      final hiveUser = UserModel.fromJson(userJson);
+
+      await storage.saveUser(hiveUser);
+
+      // Debug
+      final savedUser = storage.getUser();
+      print("Saved user: ${savedUser?.email}, id: ${savedUser?.id}");
+
+      responseModel = ResponseModel(true, "OK");
+    } catch (e) {
+      responseModel = ResponseModel(false, "An error occurred: $e");
+    } finally {
+      isLoading.value = false;
+    }
+
+    return responseModel;
+  }
+
+  Future<ResponseModel> login(String email, String password) async {
+    isLoading.value = true;
+    late ResponseModel responseModel;
+
+    try {
+      var model = UserModel(
+        email: email,
+        password: password,
+      );
+
+      Response response = await userRepo.login(model);
 
       if (response.statusCode != 200) {
         return ResponseModel(

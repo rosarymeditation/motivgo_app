@@ -2,11 +2,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:rosary/controllers/pillar_controller.dart';
-import 'package:rosary/route/route_helpers.dart';
-import 'package:rosary/widgets/caption.dart';
+import 'package:motivgo/controllers/pillar_controller.dart';
+import 'package:motivgo/route/route_helpers.dart';
+import 'package:motivgo/widgets/caption.dart';
 import '../../controllers/goal_controller.dart';
 import '../../controllers/user_controller.dart';
+import '../controllers/tab_controller.dart';
 import '../enums/pillar_type.dart';
 import '../model/goal_model.dart';
 
@@ -22,13 +23,23 @@ class _DashboardPageState extends State<DashboardPage>
   final UserController _userController = Get.find<UserController>();
   final PillarController _pillarController = Get.find<PillarController>();
   final GoalController _goalController = Get.find<GoalController>();
-
+  final MainTabController tabController = Get.find();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addObserver(this); // ✅ watch app lifecycle
+  //   _pillarController.setIsForFirstGoal(false);
+  //   _goalController.loadGoals(); // ✅ fresh load on open
+  // }
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this); // ✅ watch app lifecycle
-    _pillarController.setIsForFirstGoal(false);
-    _goalController.loadGoals(); // ✅ fresh load on open
+    WidgetsBinding.instance.addObserver(this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pillarController.setIsForFirstGoal(false);
+      _goalController.loadGoals();
+    });
   }
 
   @override
@@ -130,7 +141,7 @@ class _DashboardPageState extends State<DashboardPage>
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 430),
+            //constraints: const BoxConstraints(maxWidth: 430),
             decoration: BoxDecoration(
               color: bg,
               borderRadius: BorderRadius.circular(30),
@@ -297,7 +308,7 @@ class _DashboardPageState extends State<DashboardPage>
 
                       // ── All active goals mini list ──
                       Obx(() {
-                       final active = _goalController.goals
+                        final active = _goalController.goals
                             .where((g) => g.active ?? true)
                             .take(3)
                             .toList();
@@ -333,7 +344,7 @@ class _DashboardPageState extends State<DashboardPage>
                                   .map((s) => pillarFromApi(s))
                                   .toList(),
                             );
-                            Get.toNamed(RouteHelpers.newGoalPage);
+                            Get.toNamed(RouteHelpers.focusAreaPage);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2B2E5A),
@@ -382,8 +393,10 @@ class _DashboardPageState extends State<DashboardPage>
                                 ],
                               ),
                               GestureDetector(
-                                onTap: () => Get.toNamed(
-                                    RouteHelpers.goalOccurrencePage),
+                                onTap: () {
+                                  tabController.setTab(1);
+                                  // Get.toNamed(RouteHelpers.goalOccurrencePage);
+                                },
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),

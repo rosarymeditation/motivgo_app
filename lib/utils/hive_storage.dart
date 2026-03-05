@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:rosary/model/goal_occurrence_model.dart';
+import 'package:motivgo/model/goal_occurrence_model.dart';
 
 import '../model/goal_model.dart';
 import '../model/user_model.dart';
@@ -120,6 +120,15 @@ class HiveStorage {
   UserModel? getUser() {
     final box = Hive.box<UserModel>(userBox);
     return box.get(userKey);
+  }
+
+  Future<void> updateUserTier(String tier) async {
+    final user = getUser();
+    if (user != null) {
+      user.tier = tier;
+      user.updatedAt = DateTime.now();
+      await saveUser(user);
+    }
   }
 
   Future<void> clearAuth() async {
@@ -278,8 +287,6 @@ class HiveStorage {
       print('❌ Failed to clear $boxName: $e');
     }
   }
-
-
 
   Future<void> deleteOccurrence(GoalOccurrence occurrence) async {
     final box = Hive.box<GoalOccurrence>(goalOccurrenceBox);

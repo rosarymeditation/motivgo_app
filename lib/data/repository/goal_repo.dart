@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:rosary/model/user_model.dart';
+import 'package:motivgo/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/constants.dart';
@@ -12,10 +12,11 @@ class GoalRepo {
   Future<Response> goalUserUpdate(UserModel model) async {
     return apiClient.postData(AppConstant.USER_UPDATE_URL, model.toJson());
   }
+
   Future<Response> updateUser(UserModel model) async {
     return apiClient.postData(AppConstant.USER_UPDATE_URL, model.toJson());
   }
-  
+
   // Future<String> getTemplate() async {
   //   //return sharedPreferences.getString(AppConstant.TEMPLATE) ?? "";
   // }

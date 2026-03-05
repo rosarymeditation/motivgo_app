@@ -1,4 +1,4 @@
-import 'package:rosary/model/goal_model.dart';
+import 'package:motivgo/model/goal_model.dart';
 
 import '../../enums/pillar_type.dart';
 

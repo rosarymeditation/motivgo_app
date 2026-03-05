@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rosary/enums/pillar_type.dart';
-import 'package:rosary/route/route_helpers.dart';
+import 'package:motivgo/enums/pillar_type.dart';
+import 'package:motivgo/route/route_helpers.dart';
 
 import '../../controllers/goal_controller.dart';
 import '../../controllers/pillar_controller.dart';
